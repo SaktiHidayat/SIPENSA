@@ -23,6 +23,8 @@ return new class extends Migration
 
     $table->enum('jenis_kelamin', ['L', 'P']);
 
+    $table->enum('role', ['admin', 'guru_bk']);
+
     $table->string('foto')->nullable();
 
     $table->rememberToken();

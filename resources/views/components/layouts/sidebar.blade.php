@@ -5,21 +5,23 @@
     {{-- Logo --}}
     <div class="h-16 flex items-center justify-center border-b border-zinc-700">
 
-        <span
+        <a
+            href="{{ route('dashboard') }}"
             x-show="sidebar"
-            class="text-xl font-bold tracking-widest">
+            class="text-xl font-bold tracking-widest hover:text-gray-200">
 
             SIPENSA
 
-        </span>
+        </a>
 
-        <span
+        <a
+            href="{{ route('dashboard') }}"
             x-show="!sidebar"
-            class="text-2xl font-bold">
+            class="text-2xl font-bold hover:text-gray-200">
 
             S
 
-        </span>
+        </a>
 
     </div>
 
@@ -38,8 +40,9 @@
 
         </a>
 
-        <a href="#"
-            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 hover:bg-zinc-900 transition">
+        <a href="{{ route('users.index') }}"
+            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 transition
+            {{ request()->routeIs('users.*') ? 'bg-zinc-800 border-l-4 border-white' : 'hover:bg-zinc-900' }}">
 
             👤
 
@@ -49,8 +52,9 @@
 
         </a>
 
-        <a href="#"
-            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 hover:bg-zinc-900 transition">
+        <a href="{{ route('siswas.index') }}"
+            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 transition
+            {{ request()->routeIs('siswas.*') ? 'bg-zinc-800 border-l-4 border-white' : 'hover:bg-zinc-900' }}">
 
             🎓
 

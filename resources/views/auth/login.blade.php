@@ -33,15 +33,7 @@
 
             </p>
 
-            @if(session('status'))
-
-                <div class="mb-5 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-
-                    {{ session('status') }}
-
-                </div>
-
-            @endif
+            <x-ui.flash-message />
 
             <form method="POST"
                 action="{{ route('login') }}"

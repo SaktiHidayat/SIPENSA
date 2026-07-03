@@ -17,11 +17,11 @@ class="bg-white border-b shadow-sm">
 
         </button>
 
-        <h1 class="font-bold text-black text-xl">
+        <a href="{{ route('dashboard') }}" class="font-bold text-black text-xl hover:text-zinc-700">
 
             SIPENSA
 
-        </h1>
+        </a>
 
     </div>
 
@@ -39,9 +39,9 @@ class="bg-white border-b shadow-sm">
 
             <img
 
-                src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}"
+                src="{{ auth()->user()->foto ? asset('storage/'.auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=111827&color=ffffff' }}"
 
-                class="w-10 h-10 rounded-full">
+                class="w-10 h-10 rounded-full object-cover">
 
             <div class="hidden md:block text-left">
 
@@ -53,7 +53,7 @@ class="bg-white border-b shadow-sm">
 
                 <div class="text-xs text-gray-500">
 
-                    {{ auth()->user()->getRoleNames()->first() }}
+                    {{ auth()->user()->role === 'admin' ? 'Admin' : 'Guru BK' }}
 
                 </div>
 
@@ -72,7 +72,7 @@ class="bg-white border-b shadow-sm">
             class="absolute right-0 mt-3 bg-white rounded-xl shadow-xl w-48 overflow-hidden">
 
             <a
-                href="#"
+                href="{{ route('profile.edit') }}"
                 class="block px-5 py-3 hover:bg-gray-100">
 
                 Profil
