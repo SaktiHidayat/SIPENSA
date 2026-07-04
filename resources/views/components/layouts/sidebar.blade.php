@@ -64,8 +64,9 @@
 
         </a>
 
-        <a href="#"
-            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 hover:bg-zinc-900 transition">
+        <a href="{{ route('kriterias.index') }}"
+            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 transition
+            {{ request()->routeIs('kriterias.*') ? 'bg-zinc-800 border-l-4 border-white' : 'hover:bg-zinc-900' }}">
 
             📋
 
@@ -75,24 +76,27 @@
 
         </a>
 
-        <a href="#"
-            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 hover:bg-zinc-900 transition">
 
-            📑
-
-            <span x-show="sidebar">
-                Data Sub Kriteria
-            </span>
-
-        </a>
-
-        <a href="#"
-            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 hover:bg-zinc-900 transition">
+        <a href="{{ route('pelanggarans.index') }}"
+            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 transition
+            {{ request()->routeIs('pelanggarans.*') ? 'bg-zinc-800 border-l-4 border-white' : 'hover:bg-zinc-900' }}">
 
             ⚠️
 
             <span x-show="sidebar">
-                Jenis Pelanggaran
+               Data Jenis Pelanggaran
+            </span>
+
+        </a>
+
+        <a href="{{ route('keterlibatans.index') }}"
+            class="flex items-center gap-3 px-5 py-4 border-b border-zinc-700 transition
+            {{ request()->routeIs('keterlibatans.*') ? 'bg-zinc-800 border-l-4 border-white' : 'hover:bg-zinc-900' }}">
+
+            âƒ—
+
+            <span x-show="sidebar">
+                Data Tingkat Keterlibatan
             </span>
 
         </a>
@@ -103,7 +107,7 @@
             🛡️
 
             <span x-show="sidebar">
-                Jenis Sanksi
+                Data Jenis Hukuman
             </span>
 
         </a>

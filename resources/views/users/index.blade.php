@@ -32,7 +32,7 @@
         />
 
         <x-ui.datatable
-            :columns="['No', 'Nama', 'Username', 'NIP', 'Jenis Kelamin', 'Role', 'Dibuat', 'Aksi']"
+            :columns="['No', 'Nama', 'Role', 'Aksi']"
             :items="$users"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -44,27 +44,22 @@
                     <td class="px-5 py-4">
                         <div class="font-semibold text-gray-900">{{ $user->nama }}</div>
                     </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-600">
-                        {{ $user->username }}
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-600">
-                        {{ $user->nip ?: '-' }}
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4">
-                        <span class="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {{ $user->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
-                        </span>
-                    </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                             {{ $user->role === 'admin' ? 'Admin' : 'Guru BK' }}
                         </span>
                     </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-500">
-                        {{ $user->created_at?->format('d M Y') }}
-                    </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-zinc-700 hover:text-zinc-900"
+                                x-data
+                                x-on:click="$dispatch('open-modal', 'detail-user-{{ $user->id }}')"
+                            >
+                                Detail
+                            </button>
+
                             <button
                                 type="button"
                                 class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-zinc-700 hover:text-zinc-900"
@@ -114,6 +109,20 @@
     </x-ui.modal-box>
 
     @foreach ($users as $user)
+        <x-ui.detail-modal
+            name="detail-user-{{ $user->id }}"
+            title="Detail User"
+            :items="[
+                'Nama' => $user->nama,
+                'Username' => $user->username,
+                'NIP' => $user->nip,
+                'Jenis Kelamin' => $user->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                'Role' => $user->role === 'admin' ? 'Admin' : 'Guru BK',
+                'Dibuat' => $user->created_at?->format('d M Y H:i'),
+                'Diperbarui' => $user->updated_at?->format('d M Y H:i'),
+            ]"
+        />
+
         <x-ui.modal-box name="edit-user-{{ $user->id }}" title="Edit User" :show="$activeModal === 'edit-user-'.$user->id">
             <form action="{{ route('users.update', $user) }}" method="POST" class="space-y-5">
                 @csrf

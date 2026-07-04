@@ -32,7 +32,7 @@
         />
 
         <x-ui.datatable
-            :columns="['No', 'Nama', 'NISN', 'Jenis Kelamin', 'Kelas', 'Dibuat', 'Aksi']"
+            :columns="['No', 'Nama', 'Kelas', 'Aksi']"
             :items="$siswas"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -45,21 +45,19 @@
                         <div class="font-semibold text-gray-900">{{ $siswa->nama }}</div>
                     </td>
                     <td class="whitespace-nowrap px-5 py-4 text-gray-600">
-                        {{ $siswa->nisn }}
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4">
-                        <span class="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {{ $siswa->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
-                        </span>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-600">
                         {{ $siswa->kelas }}
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-500">
-                        {{ $siswa->created_at?->format('d M Y') }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-zinc-700 hover:text-zinc-900"
+                                x-data
+                                x-on:click="$dispatch('open-modal', 'detail-siswa-{{ $siswa->id }}')"
+                            >
+                                Detail
+                            </button>
+
                             <button
                                 type="button"
                                 class="rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-zinc-700 hover:text-zinc-900"
@@ -109,6 +107,19 @@
     </x-ui.modal-box>
 
     @foreach ($siswas as $siswa)
+        <x-ui.detail-modal
+            name="detail-siswa-{{ $siswa->id }}"
+            title="Detail Siswa"
+            :items="[
+                'Nama' => $siswa->nama,
+                'NISN' => $siswa->nisn,
+                'Jenis Kelamin' => $siswa->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                'Kelas' => $siswa->kelas,
+                'Dibuat' => $siswa->created_at?->format('d M Y H:i'),
+                'Diperbarui' => $siswa->updated_at?->format('d M Y H:i'),
+            ]"
+        />
+
         <x-ui.modal-box name="edit-siswa-{{ $siswa->id }}" title="Edit Siswa" :show="$activeModal === 'edit-siswa-'.$siswa->id">
             <form action="{{ route('siswas.update', $siswa) }}" method="POST" class="space-y-5">
                 @csrf

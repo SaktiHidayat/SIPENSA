@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\JenisPelanggaranController;
+use App\Http\Controllers\TingkatKeterlibatanController;
+use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +22,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
     Route::resource('siswas', SiswaController::class)->except(['create', 'show', 'edit']);
+    Route::resource('kriterias', KriteriaController::class)->except(['create', 'show', 'edit']);
+    Route::resource('pelanggarans', JenisPelanggaranController::class)->except(['create', 'show', 'edit']);
+    Route::resource('keterlibatans', TingkatKeterlibatanController::class)->except(['create', 'show', 'edit']);
 });
 
 require __DIR__.'/auth.php';
