@@ -28,11 +28,11 @@
         <x-ui.search-bar
             :action="route('users.index')"
             :value="$search"
-            placeholder="Cari nama, username, role, atau jenis kelamin..."
+            placeholder="Cari nama, username, NIP, role, atau jenis kelamin..."
         />
 
         <x-ui.datatable
-            :columns="['No', 'Nama', 'Username', 'Jenis Kelamin', 'Role', 'Dibuat', 'Aksi']"
+            :columns="['No', 'Nama', 'Username', 'NIP', 'Jenis Kelamin', 'Role', 'Dibuat', 'Aksi']"
             :items="$users"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -46,6 +46,9 @@
                     </td>
                     <td class="whitespace-nowrap px-5 py-4 text-gray-600">
                         {{ $user->username }}
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4 text-gray-600">
+                        {{ $user->nip ?: '-' }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <span class="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">

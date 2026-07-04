@@ -19,6 +19,8 @@ return new class extends Migration
 
     $table->string('username')->unique();
 
+    $table->string('nip', 18)->nullable();
+
     $table->string('password');
 
     $table->enum('jenis_kelamin', ['L', 'P']);

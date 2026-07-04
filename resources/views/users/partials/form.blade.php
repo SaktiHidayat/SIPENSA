@@ -42,6 +42,26 @@
     </div>
 
     <div>
+        <label for="{{ $mode }}-nip-{{ $user?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
+            NIP
+        </label>
+        <input
+            id="{{ $mode }}-nip-{{ $user?->id ?? 'new' }}"
+            name="nip"
+            type="text"
+            value="{{ old('nip', $user?->nip) }}"
+            inputmode="numeric"
+            maxlength="18"
+            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+            required
+        >
+        <p class="mt-1 text-xs text-gray-500">NIP wajib tepat 18 digit angka.</p>
+        @error('nip')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
         <label for="{{ $mode }}-jenis-kelamin-{{ $user?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
             Jenis Kelamin
         </label>

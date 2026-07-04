@@ -75,7 +75,7 @@ class SiswaController extends Controller
                 Rule::unique('siswas', 'nisn')->ignore($siswa?->id),
             ],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
-            'kelas' => ['required', 'string', 'max:50'],
+            'kelas' => ['required', 'string', 'max:50', 'regex:/^(VII|VIII|IX)(-[IVXLCDM0-9A-Z]+)?$/'],
         ];
     }
 
@@ -93,6 +93,7 @@ class SiswaController extends Controller
             'kelas.required' => 'Kelas wajib diisi.',
             'kelas.string' => 'Kelas harus berupa teks.',
             'kelas.max' => 'Kelas maksimal 50 karakter.',
+            'kelas.regex' => 'Kelas wajib diawali angka romawi VII, VIII, atau IX. Contoh: VII-I, VIII-II, atau IX-III.',
         ];
     }
 }

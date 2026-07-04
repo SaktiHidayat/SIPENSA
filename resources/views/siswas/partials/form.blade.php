@@ -69,10 +69,12 @@
             name="kelas"
             type="text"
             value="{{ old('kelas', $siswa?->kelas) }}"
-            placeholder="Contoh: VII-4"
+            placeholder="Contoh: VII-I"
+            pattern="(VII|VIII|IX)(-[IVXLCDM0-9A-Z]+)?"
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             required
         >
+        <p class="mt-1 text-xs text-gray-500">Wajib romawi VII sampai IX. Contoh: VII-I. Kelas X-I tidak valid.</p>
         @error('kelas')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror

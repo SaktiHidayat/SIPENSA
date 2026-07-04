@@ -18,6 +18,7 @@ class UserService
                 $query->where(function ($query) use ($search, $normalizedSearch) {
                     $query->where('nama', 'like', "%{$search}%")
                         ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('nip', 'like', "%{$search}%")
                         ->orWhere('role', 'like', "%{$search}%")
                         ->orWhere('jenis_kelamin', 'like', "%{$search}%");
 
@@ -48,6 +49,7 @@ class UserService
         return User::create([
             'nama' => $data['nama'],
             'username' => $data['username'],
+            'nip' => $data['nip'] ?? null,
             'password' => Hash::make($data['password']),
             'jenis_kelamin' => $data['jenis_kelamin'],
             'role' => $data['role'],
@@ -59,6 +61,7 @@ class UserService
         $payload = [
             'nama' => $data['nama'],
             'username' => $data['username'],
+            'nip' => $data['nip'] ?? null,
             'jenis_kelamin' => $data['jenis_kelamin'],
             'role' => $data['role'],
         ];

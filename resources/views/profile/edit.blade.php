@@ -26,7 +26,13 @@
                     </div>
                 </div>
 
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                <form
+                    action="{{ route('profile.update') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="space-y-5"
+                    x-data="{ photoPreview: '{{ $photoUrl }}' }"
+                >
                     @csrf
                     @method('PATCH')
 
@@ -47,6 +53,15 @@
                     </div>
 
                     <div>
+                        <label for="nip" class="mb-1 block text-sm font-medium text-gray-700">NIP</label>
+                        <input id="nip" name="nip" type="text" value="{{ old('nip', $user->nip) }}" inputmode="numeric" maxlength="18" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
+                        <p class="mt-1 text-xs text-gray-500">NIP wajib tepat 18 digit angka.</p>
+                        @error('nip')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
                         <label for="jenis_kelamin" class="mb-1 block text-sm font-medium text-gray-700">Jenis Kelamin</label>
                         <select id="jenis_kelamin" name="jenis_kelamin" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
                             <option value="">Pilih jenis kelamin</option>
@@ -60,7 +75,38 @@
 
                     <div>
                         <label for="foto" class="mb-1 block text-sm font-medium text-gray-700">Foto Profil</label>
-                        <input id="foto" name="foto" type="file" accept="image/png,image/jpeg,image/webp" class="block w-full rounded-lg border border-gray-300 text-sm text-gray-700 shadow-sm file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-zinc-800 focus:border-zinc-700 focus:ring-zinc-700">
+
+                        <div class="mb-3 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                                <div class="h-32 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                                    <img
+                                        :src="photoPreview"
+                                        alt="Preview foto profil"
+                                        class="h-full w-full object-cover"
+                                    >
+                                </div>
+
+                                <div class="text-sm text-gray-600">
+                                    <p class="font-semibold text-gray-800">Preview Foto Profil</p>
+                                    <p class="mt-1">Gambar baru akan langsung tampil di kotak ini sebelum disimpan.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input
+                            id="foto"
+                            name="foto"
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            class="block w-full rounded-lg border border-gray-300 text-sm text-gray-700 shadow-sm file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-zinc-800 focus:border-zinc-700 focus:ring-zinc-700"
+                            x-on:change="
+                                const file = $event.target.files[0];
+                                if (! file) return;
+                                const reader = new FileReader();
+                                reader.onload = event => photoPreview = event.target.result;
+                                reader.readAsDataURL(file);
+                            "
+                        >
                         <p class="mt-1 text-xs text-gray-500">Format JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
                         @error('foto')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -72,7 +118,10 @@
                         <input type="text" value="{{ $user->role === 'admin' ? 'Admin' : 'Guru BK' }}" class="w-full rounded-lg border-gray-200 bg-gray-100 text-gray-500 shadow-sm" readonly>
                     </div>
 
-                    <div class="flex justify-end border-t border-gray-100 pt-5">
+                    <div class="flex justify-between gap-3 border-t border-gray-100 pt-5">
+                        <a href="{{ url()->previous() === url()->current() ? route('dashboard') : url()->previous() }}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                            Kembali
+                        </a>
                         <button type="submit" class="rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-zinc-800">
                             Simpan Profil
                         </button>
