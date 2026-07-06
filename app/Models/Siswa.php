@@ -15,4 +15,9 @@ class Siswa extends Model
         'jenis_kelamin',
         'kelas',
     ];
+
+    public function alternatifs()
+    {
+        return $this->hasMany(Alternatif::class);
+    }
 }

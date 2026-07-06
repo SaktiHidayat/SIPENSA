@@ -92,4 +92,9 @@ class JenisPelanggaran extends Model
 
         return $rule['min'].' - '.$rule['max'];
     }
+
+    public function alternatifs()
+    {
+        return $this->hasMany(Alternatif::class);
+    }
 }

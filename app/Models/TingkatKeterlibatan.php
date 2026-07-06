@@ -138,4 +138,9 @@ class TingkatKeterlibatan extends Model
     {
         return $this->poin_keterlibatan;
     }
+
+    public function alternatifs()
+    {
+        return $this->hasMany(Alternatif::class);
+    }
 }
