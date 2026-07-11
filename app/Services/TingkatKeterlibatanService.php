@@ -16,7 +16,6 @@ class TingkatKeterlibatanService
                 $query->where(function ($query) use ($search) {
                     $query->where('kode_tingkat_keterlibatan', 'like', "%{$search}%")
                         ->orWhere('nama_keterangan', 'like', "%{$search}%")
-                        ->orWhere('poin_keterlibatan', 'like', "%{$search}%")
                         ->orWhere('kategori', 'like', "%{$search}%");
                 });
             })
@@ -28,12 +27,10 @@ class TingkatKeterlibatanService
     public function create(array $data): TingkatKeterlibatan
     {
         $rule = TingkatKeterlibatan::ruleForLabel($data['nama_keterangan']);
-        $point = TingkatKeterlibatan::randomPointForLabel($data['nama_keterangan']);
 
         return TingkatKeterlibatan::create([
             'kode_tingkat_keterlibatan' => $data['kode_tingkat_keterlibatan'],
             'nama_keterangan' => $data['nama_keterangan'],
-            'poin_keterlibatan' => $point,
             'kategori' => $rule['kategori'],
             'skala_fuzzy' => $rule['skala_fuzzy'],
         ]);
@@ -42,12 +39,10 @@ class TingkatKeterlibatanService
     public function update(TingkatKeterlibatan $tingkatKeterlibatan, array $data): TingkatKeterlibatan
     {
         $rule = TingkatKeterlibatan::ruleForLabel($data['nama_keterangan']);
-        $point = TingkatKeterlibatan::randomPointForLabel($data['nama_keterangan']);
 
         $tingkatKeterlibatan->update([
             'kode_tingkat_keterlibatan' => $data['kode_tingkat_keterlibatan'],
             'nama_keterangan' => $data['nama_keterangan'],
-            'poin_keterlibatan' => $point,
             'kategori' => $rule['kategori'],
             'skala_fuzzy' => $rule['skala_fuzzy'],
         ]);

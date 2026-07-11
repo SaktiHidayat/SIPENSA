@@ -9,6 +9,8 @@ class JenisHukuman extends Model
     protected $table = 'jenis_hukumans';
 
     protected $fillable = [
+        'kode_hukuman',
+        'nama_hukuman',
         'kategori',
         'rentang_poin',
     ];

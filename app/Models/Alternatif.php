@@ -16,7 +16,6 @@ class Alternatif extends Model
         'poin_jenis_pelanggaran',
         'skala_fuzzy_jenis_pelanggaran',
         'tingkat_keterlibatan_id',
-        'poin_tingkat_keterlibatan',
         'skala_fuzzy_tingkat_keterlibatan',
     ];
 
@@ -24,7 +23,6 @@ class Alternatif extends Model
     {
         return [
             'poin_jenis_pelanggaran' => 'integer',
-            'poin_tingkat_keterlibatan' => 'integer',
             'skala_fuzzy_jenis_pelanggaran' => 'decimal:2',
             'skala_fuzzy_tingkat_keterlibatan' => 'decimal:2',
         ];

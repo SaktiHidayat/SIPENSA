@@ -142,7 +142,6 @@
                     <td class="whitespace-nowrap px-5 py-4 text-gray-700">
                         <div class="text-sm text-gray-900">
                             <div class="font-semibold">{{ $alternatif->tingkatKeterlibatan?->nama_keterangan ?? '-' }}</div>
-                            <div class="text-xs text-gray-500">Poin: {{ $alternatif->poin_tingkat_keterlibatan }}</div>
                             <div class="text-xs text-gray-500">Skala: {{ $alternatif->skala_fuzzy_tingkat_keterlibatan }}</div>
                         </div>
                     </td>
@@ -178,7 +177,7 @@
                     </td>
                 </tr>
             @endforeach
-        </x-ui.datatable>
+        </x-ui.datatable> 
     </div>
 
     <x-ui.modal-box name="create-alternatif" title="Tambah Alternatif" :show="$activeModal === 'create-alternatif'">
@@ -217,7 +216,6 @@
                 'Poin Jenis Pelanggaran' => $alternatif->poin_jenis_pelanggaran,
                 'Skala Fuzzy C1' => $alternatif->skala_fuzzy_jenis_pelanggaran,
                 'Tingkat Keterlibatan' => $alternatif->tingkatKeterlibatan?->nama_keterangan,
-                'Poin Tingkat Keterlibatan' => $alternatif->poin_tingkat_keterlibatan,
                 'Skala Fuzzy C2' => $alternatif->skala_fuzzy_tingkat_keterlibatan,
                 'Dibuat' => $alternatif->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $alternatif->updated_at?->format('d M Y H:i'),

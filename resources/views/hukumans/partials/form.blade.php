@@ -19,6 +19,42 @@
     x-init="syncRange()"
 >
     <div>
+        <label for="{{ $mode }}-kode-hukuman-{{ $jenisHukuman?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
+            Kode Hukuman
+        </label>
+        <input
+            id="{{ $mode }}-kode-hukuman-{{ $jenisHukuman?->id ?? 'new' }}"
+            type="text"
+            name="kode_hukuman"
+            value="{{ old('kode_hukuman', $jenisHukuman?->kode_hukuman) }}"
+            placeholder="Contoh: HK001"
+            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+            required
+        >
+        @error('kode_hukuman')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="{{ $mode }}-nama-hukuman-{{ $jenisHukuman?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
+            Nama Hukuman
+        </label>
+        <input
+            id="{{ $mode }}-nama-hukuman-{{ $jenisHukuman?->id ?? 'new' }}"
+            type="text"
+            name="nama_hukuman"
+            value="{{ old('nama_hukuman', $jenisHukuman?->nama_hukuman) }}"
+            placeholder="Contoh: Teguran"
+            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+            required
+        >
+        @error('nama_hukuman')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
         <label for="{{ $mode }}-kategori-{{ $jenisHukuman?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
             Kategori
         </label>

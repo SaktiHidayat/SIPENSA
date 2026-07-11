@@ -92,7 +92,7 @@
         />
 
         <x-ui.datatable
-            :columns="['No', 'Kategori', 'Rentang Poin', 'Aksi']"
+            :columns="['No', 'Kode', 'Nama Hukuman', 'Kategori', 'Rentang Poin', 'Aksi']"
             :items="$jenisHukumans"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -100,6 +100,12 @@
                 <tr class="transition hover:bg-gray-50">
                     <td class="whitespace-nowrap px-5 py-4 text-gray-500">
                         {{ $jenisHukumans->firstItem() + $loop->index }}
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4">
+                        <span class="font-medium text-gray-900">{{ $jenisHukuman->kode_hukuman }}</span>
+                    </td>
+                    <td class="px-5 py-4 text-gray-700">
+                        {{ $jenisHukuman->nama_hukuman }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
@@ -173,6 +179,8 @@
             name="detail-jenis-hukuman-{{ $jenisHukuman->id }}"
             title="Detail Jenis Hukuman"
             :items="[
+                'Kode Hukuman' => $jenisHukuman->kode_hukuman,
+                'Nama Hukuman' => $jenisHukuman->nama_hukuman,
                 'Kategori' => $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori),
                 'Rentang Poin' => $jenisHukuman->rentang_poin,
                 'Dibuat' => $jenisHukuman->created_at?->format('d M Y H:i'),
@@ -211,7 +219,7 @@
                 @method('DELETE')
 
                 <div class="rounded-lg bg-red-50 p-4 text-sm text-red-700">
-                    Yakin ingin menghapus jenis hukuman dengan kategori <span class="font-semibold">{{ $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori) }}</span>?
+                    Yakin ingin menghapus jenis hukuman <span class="font-semibold">{{ $jenisHukuman->nama_hukuman }}</span>?
                 </div>
 
                 <div class="flex justify-end gap-3 border-t border-gray-100 pt-5">

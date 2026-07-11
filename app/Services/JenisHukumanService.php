@@ -14,7 +14,9 @@ class JenisHukumanService
         return JenisHukuman::query()
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
-                    $query->where('kategori', 'like', "%{$search}%")
+                    $query->where('kode_hukuman', 'like', "%{$search}%")
+                        ->orWhere('nama_hukuman', 'like', "%{$search}%")
+                        ->orWhere('kategori', 'like', "%{$search}%")
                         ->orWhere('rentang_poin', 'like', "%{$search}%");
                 });
             })
@@ -26,6 +28,8 @@ class JenisHukumanService
     public function create(array $data): JenisHukuman
     {
         return JenisHukuman::create([
+            'kode_hukuman' => $data['kode_hukuman'],
+            'nama_hukuman' => $data['nama_hukuman'],
             'kategori' => $data['kategori'],
             'rentang_poin' => JenisHukuman::rangeForCategory($data['kategori']),
         ]);
@@ -34,6 +38,8 @@ class JenisHukumanService
     public function update(JenisHukuman $jenisHukuman, array $data): JenisHukuman
     {
         $jenisHukuman->update([
+            'kode_hukuman' => $data['kode_hukuman'],
+            'nama_hukuman' => $data['nama_hukuman'],
             'kategori' => $data['kategori'],
             'rentang_poin' => JenisHukuman::rangeForCategory($data['kategori']),
         ]);

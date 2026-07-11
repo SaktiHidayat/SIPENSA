@@ -44,12 +44,8 @@ return new class extends Migration
             DB::statement('ALTER TABLE alternatifs ADD COLUMN tingkat_keterlibatan_id BIGINT UNSIGNED NULL AFTER poin_jenis_pelanggaran');
         }
 
-        if (!Schema::hasColumn('alternatifs', 'poin_tingkat_keterlibatan')) {
-            DB::statement('ALTER TABLE alternatifs ADD COLUMN poin_tingkat_keterlibatan INT UNSIGNED NULL AFTER tingkat_keterlibatan_id');
-        }
-
         if (!Schema::hasColumn('alternatifs', 'skala_fuzzy_tingkat_keterlibatan')) {
-            DB::statement('ALTER TABLE alternatifs ADD COLUMN skala_fuzzy_tingkat_keterlibatan DECIMAL(4,2) NULL AFTER poin_tingkat_keterlibatan');
+            DB::statement('ALTER TABLE alternatifs ADD COLUMN skala_fuzzy_tingkat_keterlibatan DECIMAL(4,2) NULL AFTER tingkat_keterlibatan_id');
         }
 
         if (Schema::hasColumn('alternatifs', 'siswa_id')) {
@@ -86,7 +82,6 @@ return new class extends Migration
 
             foreach ([
                 'skala_fuzzy_tingkat_keterlibatan',
-                'poin_tingkat_keterlibatan',
                 'tingkat_keterlibatan_id',
                 'skala_fuzzy_jenis_pelanggaran',
                 'poin_jenis_pelanggaran',

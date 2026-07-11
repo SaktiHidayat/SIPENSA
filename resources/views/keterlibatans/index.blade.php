@@ -35,9 +35,9 @@
                     </div>
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Catatan Pengisian</h2>
-                        <p class="mt-1 text-sm text-gray-500">
-                            Kode diisi manual, lalu nama keterangan dipilih dari opsi yang tersedia. Poin, kategori, skala fuzzy, dan rentang poin dihitung otomatis.
-                        </p>
+                <p class="mt-1 text-sm text-gray-500">
+                            Kode diisi manual, lalu nama keterangan dipilih dari opsi yang tersedia. Kategori dan skala fuzzy dihitung otomatis.
+                </p>
                     </div>
                 </div>
 
@@ -46,7 +46,7 @@
                     <ol class="mt-2 space-y-2 list-decimal pl-5">
                         <li>Admin memilih nama keterangan tingkat keterlibatan.</li>
                         <li>Admin mengisi kode keterlibatan.</li>
-                        <li>Sistem menentukan poin, kategori, skala fuzzy, dan rentang poin secara otomatis.</li>
+                        <li>Sistem menentukan kategori dan skala fuzzy secara otomatis.</li>
                     </ol>
                 </div>
             </div>
@@ -62,7 +62,6 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Keterangan</th>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rentang Poin</th>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</th>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rumus</th>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Skala Fuzzy</th>
@@ -72,7 +71,6 @@
                             @foreach ($fuzzyRules as $rule)
                                 <tr>
                                     <td class="px-5 py-4 font-medium text-gray-900">{{ $rule['label'] }}</td>
-                                    <td class="whitespace-nowrap px-5 py-4 text-gray-700">{{ $rule['min'] }} - {{ $rule['max'] }}</td>
                                     <td class="whitespace-nowrap px-5 py-4 text-gray-700">{{ $rule['kategori'] }}</td>
                                     <td class="px-5 py-4 text-gray-600">{{ $rule['rumus'] }}</td>
                                     <td class="whitespace-nowrap px-5 py-4">
@@ -95,7 +93,7 @@
         />
 
         <x-ui.datatable
-            :columns="['No', 'Kode', 'Keterangan', 'Poin', 'Kategori', 'Skala', 'Aksi']"
+            :columns="['No', 'Kode', 'Keterangan', 'Kategori', 'Skala', 'Aksi']"
             :items="$tingkatKeterlibatans"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -111,9 +109,6 @@
                     </td>
                     <td class="px-5 py-4">
                         <div class="font-semibold text-gray-900">{{ $tingkatKeterlibatan->nama_keterangan }}</div>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-gray-700">
-                        {{ $tingkatKeterlibatan->poin_keterlibatan }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -189,11 +184,8 @@
             :items="[
                 'Kode' => $tingkatKeterlibatan->kode_tingkat_keterlibatan,
                 'Nama Keterangan' => $tingkatKeterlibatan->nama_keterangan,
-                'Poin Keterlibatan' => $tingkatKeterlibatan->poin_keterlibatan,
                 'Kategori' => $tingkatKeterlibatan->kategori,
                 'Skala Fuzzy' => rtrim(rtrim(number_format((float) $tingkatKeterlibatan->skala_fuzzy, 2, '.', ''), '0'), '.'),
-                'Rentang' => $tingkatKeterlibatan->rentang_poin,
-                'Rumus' => $tingkatKeterlibatan->rumus_fuzzy,
                 'Dibuat' => $tingkatKeterlibatan->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $tingkatKeterlibatan->updated_at?->format('d M Y H:i'),
             ]"

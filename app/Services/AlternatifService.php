@@ -52,7 +52,6 @@ class AlternatifService
             'poin_jenis_pelanggaran' => $jenisPelanggaran->poin_pelanggaran,
             'skala_fuzzy_jenis_pelanggaran' => $jenisPelanggaran->skala_fuzzy,
             'tingkat_keterlibatan_id' => $tingkatKeterlibatan->id,
-            'poin_tingkat_keterlibatan' => $tingkatKeterlibatan->poin_keterlibatan,
             'skala_fuzzy_tingkat_keterlibatan' => $tingkatKeterlibatan->skala_fuzzy,
         ]);
     }
@@ -71,7 +70,6 @@ class AlternatifService
             'poin_jenis_pelanggaran' => $jenisPelanggaran->poin_pelanggaran,
             'skala_fuzzy_jenis_pelanggaran' => $jenisPelanggaran->skala_fuzzy,
             'tingkat_keterlibatan_id' => $tingkatKeterlibatan->id,
-            'poin_tingkat_keterlibatan' => $tingkatKeterlibatan->poin_keterlibatan,
             'skala_fuzzy_tingkat_keterlibatan' => $tingkatKeterlibatan->skala_fuzzy,
         ]);
 

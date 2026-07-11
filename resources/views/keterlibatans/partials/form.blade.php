@@ -8,7 +8,6 @@
     class="grid gap-4"
     x-data="{
         selectedLabel: '{{ old('nama_keterangan', $tingkatKeterlibatan?->nama_keterangan) }}',
-        selectedPoint: null,
         rules: @js($rules),
         get selectedRule() {
             if (!this.selectedLabel) {
@@ -17,13 +16,8 @@
 
             return this.rules.find((rule) => rule.label === this.selectedLabel) ?? null;
         },
-        randomPoint(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        },
         syncPreview() {
-            const rule = this.selectedRule;
-
-            this.selectedPoint = rule ? this.randomPoint(rule.min, rule.max) : null;
+            return this.selectedRule;
         },
         init() {
             this.syncPreview();
@@ -77,13 +71,6 @@
         <p class="text-sm font-semibold text-gray-800">Preview Otomatis</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <div class="rounded-lg bg-white p-3 shadow-sm">
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Poin</p>
-                <p class="mt-1 text-sm font-semibold text-gray-900" x-text="selectedPoint ?? '-'">
-                    {{ $tingkatKeterlibatan?->poin_keterlibatan ?? '-' }}
-                </p>
-            </div>
-
-            <div class="rounded-lg bg-white p-3 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</p>
                 <p class="mt-1 text-sm font-semibold text-gray-900" x-text="selectedRule ? selectedRule.kategori : '-'">
                     {{ $tingkatKeterlibatan?->kategori ?? '-' }}
@@ -96,20 +83,11 @@
                     {{ isset($tingkatKeterlibatan) && $tingkatKeterlibatan?->exists ? rtrim(rtrim(number_format((float) $tingkatKeterlibatan->skala_fuzzy, 2, '.', ''), '0'), '.') : '-' }}
                 </p>
             </div>
-
-            <div class="rounded-lg bg-white p-3 shadow-sm">
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Rentang Poin</p>
-                <p class="mt-1 text-sm font-semibold text-gray-900" x-text="selectedRule ? `${selectedRule.min} - ${selectedRule.max}` : '-'">
-                    {{ isset($tingkatKeterlibatan) && $tingkatKeterlibatan?->exists ? $tingkatKeterlibatan->rentang_poin : '-' }}
-                </p>
-            </div>
         </div>
     </div>
 
     <div class="rounded-xl border border-dashed border-gray-300 bg-white p-4">
         <p class="text-sm font-semibold text-gray-800">Catatan</p>
-        <p class="mt-1 text-sm text-gray-600">
-            Poin diambil otomatis dari pilihan keterangan, lalu disimpan bersama kategori dan skala fuzzy sesuai rentang 0 sampai 300.
-        </p>
+        <p class="mt-1 text-sm text-gray-600">Kategori dan skala fuzzy diambil otomatis dari pilihan keterangan.</p>
     </div>
 </div>

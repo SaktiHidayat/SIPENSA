@@ -45,7 +45,7 @@ class JenisHukumanController extends Controller
 
     public function update(Request $request, JenisHukuman $hukuman): RedirectResponse
     {
-        $validator = Validator::make($request->all(), $this->rules(), $this->messages());
+        $validator = Validator::make($request->all(), $this->rules($hukuman), $this->messages());
 
         if ($validator->fails()) {
             return back()
@@ -66,9 +66,16 @@ class JenisHukumanController extends Controller
         return to_route('hukumans.index')->with('success', 'Data jenis hukuman berhasil dihapus.');
     }
 
-    private function rules(): array
+    private function rules(?JenisHukuman $hukuman = null): array
     {
         return [
+            'kode_hukuman' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('jenis_hukumans', 'kode_hukuman')->ignore($hukuman?->id),
+            ],
+            'nama_hukuman' => ['required', 'string', 'max:255'],
             'kategori' => ['required', Rule::in(array_keys(JenisHukuman::categories()))],
         ];
     }
@@ -76,6 +83,13 @@ class JenisHukumanController extends Controller
     private function messages(): array
     {
         return [
+            'kode_hukuman.required' => 'Kode hukuman wajib diisi.',
+            'kode_hukuman.string' => 'Kode hukuman harus berupa teks.',
+            'kode_hukuman.max' => 'Kode hukuman maksimal 50 karakter.',
+            'kode_hukuman.unique' => 'Kode hukuman sudah digunakan.',
+            'nama_hukuman.required' => 'Nama hukuman wajib diisi.',
+            'nama_hukuman.string' => 'Nama hukuman harus berupa teks.',
+            'nama_hukuman.max' => 'Nama hukuman maksimal 255 karakter.',
             'kategori.required' => 'Kategori wajib dipilih.',
             'kategori.in' => 'Kategori yang dipilih tidak valid.',
         ];

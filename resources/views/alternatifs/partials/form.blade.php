@@ -14,14 +14,13 @@
     x-data="{
         siswas: @js($siswas->map(fn ($siswa) => ['id' => $siswa->id, 'nama' => $siswa->nama, 'nisn' => $siswa->nisn])->values()),
         pelanggarans: @js($jenisPelanggarans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_pelanggaran.' - '.$item->nama_pelanggaran, 'poin' => $item->poin_pelanggaran])->values()),
-        keterlibatans: @js($tingkatKeterlibatans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_tingkat_keterlibatan.' - '.$item->nama_keterangan, 'poin' => $item->poin_keterlibatan])->values()),
+        keterlibatans: @js($tingkatKeterlibatans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_tingkat_keterlibatan.' - '.$item->nama_keterangan, 'skala_fuzzy' => $item->skala_fuzzy])->values()),
         siswaId: @js($selectedSiswaId),
         nisn: @js(old('nisn', $alternatif?->nisn)),
         jenisPelanggaranId: @js($selectedJenisPelanggaranId),
         poinPelanggaran: @js(old('poin_jenis_pelanggaran', $alternatif?->poin_jenis_pelanggaran)),
         skalaFuzzyPelanggaran: @js(old('skala_fuzzy_jenis_pelanggaran', $alternatif?->skala_fuzzy_jenis_pelanggaran)),
         tingkatKeterlibatanId: @js($selectedTingkatKeterlibatanId),
-        poinKeterlibatan: @js(old('poin_tingkat_keterlibatan', $alternatif?->poin_tingkat_keterlibatan)),
         skalaFuzzyKeterlibatan: @js(old('skala_fuzzy_tingkat_keterlibatan', $alternatif?->skala_fuzzy_tingkat_keterlibatan)),
         syncSiswa() {
             const siswa = this.siswas.find(item => String(item.id) === String(this.siswaId));
@@ -34,8 +33,7 @@
         },
         syncKeterlibatan() {
             const item = this.keterlibatans.find(item => String(item.id) === String(this.tingkatKeterlibatanId));
-            this.poinKeterlibatan = item ? item.poin : '';
-            this.skalaFuzzyKeterlibatan = item ? (item.poin <= 4 ? 0 : item.poin <= 15 ? 0.25 : item.poin <= 30 ? 0.5 : item.poin <= 75 ? 0.75 : 1) : '';
+            this.skalaFuzzyKeterlibatan = item ? item.skala_fuzzy : '';
         },
         initForm() {
             this.syncSiswa();
@@ -173,19 +171,6 @@
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
         <p class="mt-1 text-xs text-gray-500">Dipilih dari master tingkat keterlibatan, lalu poin terisi otomatis.</p>
-    </div>
-
-    <div>
-        <label for="{{ $mode }}-poin-tingkat-keterlibatan-{{ $alternatif?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
-            Poin Tingkat Keterlibatan
-        </label>
-        <input
-            id="{{ $mode }}-poin-tingkat-keterlibatan-{{ $alternatif?->id ?? 'new' }}"
-            type="text"
-            x-model="poinKeterlibatan"
-            class="w-full rounded-lg border-gray-300 bg-gray-50 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
-            readonly
-        >
     </div>
 
     <div>
