@@ -6,6 +6,13 @@
     @php
         $activeModal = session('modal');
         $categories = \App\Models\JenisHukuman::categories();
+        $levelBadgeClasses = [
+            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
+            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
+            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
+            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
+        ];
     @endphp
 
     <div class="space-y-6">
@@ -68,16 +75,24 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
                             <tr>
+                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sangat Rendah</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0 - 0.15</td>
+                            </tr>
+                            <tr>
                                 <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Rendah</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0 - 0.3</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.16 - 0.3</td>
                             </tr>
                             <tr>
                                 <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sedang</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.31 - 0.7</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.31 - 0.55</td>
                             </tr>
                             <tr>
                                 <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Tinggi</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.71 - 1</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.56 - 0.8</td>
+                            </tr>
+                            <tr>
+                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sangat Tinggi</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.81 - 1</td>
                             </tr>
                         </tbody>
                     </table>
@@ -108,12 +123,12 @@
                         {{ $jenisHukuman->nama_hukuman }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
-                        <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $levelBadgeClasses[$jenisHukuman->kategori] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">
                             {{ $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori) }}
                         </span>
                     </td>
                     <td class="whitespace-nowrap px-5 py-4 text-gray-700">
-                        {{ $jenisHukuman->rentang_poin }}
+                        {{ $jenisHukuman->rentang_poin_display }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <div class="flex items-center gap-2">
@@ -182,7 +197,7 @@
                 'Kode Hukuman' => $jenisHukuman->kode_hukuman,
                 'Nama Hukuman' => $jenisHukuman->nama_hukuman,
                 'Kategori' => $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori),
-                'Rentang Poin' => $jenisHukuman->rentang_poin,
+                'Rentang Poin' => $jenisHukuman->rentang_poin_display,
                 'Dibuat' => $jenisHukuman->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $jenisHukuman->updated_at?->format('d M Y H:i'),
             ]"

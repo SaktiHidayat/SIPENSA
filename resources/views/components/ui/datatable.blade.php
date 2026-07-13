@@ -37,7 +37,7 @@
         </table>
     </div>
 
-    @if ($items && $items->hasPages())
+    @if ($items && method_exists($items, 'hasPages') && $items->hasPages())
         <div class="border-t border-gray-100 bg-gray-50 px-5 py-4">
             {{ $items->links() }}
         </div>

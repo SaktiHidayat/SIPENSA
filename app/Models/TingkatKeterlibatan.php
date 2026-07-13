@@ -92,6 +92,11 @@ class TingkatKeterlibatan extends Model
         return static::ruleForLabel($this->nama_keterangan)['skala_fuzzy'];
     }
 
+    public function getSkalaFuzzyRawAttribute(): float
+    {
+        return (float) ($this->attributes['skala_fuzzy'] ?? 0);
+    }
+
     public function getRumusFuzzyAttribute(): string
     {
         return static::ruleForLabel($this->nama_keterangan)['rumus'];

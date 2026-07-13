@@ -5,6 +5,13 @@
 @section('content')
     @php
         $activeModal = session('modal');
+        $levelBadgeClasses = [
+            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
+            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
+            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
+            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
+        ];
     @endphp
 
     <div class="space-y-6">
@@ -115,7 +122,7 @@
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <div class="flex flex-col gap-1">
-                            <span class="inline-flex w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            <span class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $levelBadgeClasses[strtolower($jenisPelanggaran->kategori_fuzzy)] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">
                                 {{ $jenisPelanggaran->kategori_fuzzy }}
                             </span>
                             <span class="text-xs text-gray-500">
