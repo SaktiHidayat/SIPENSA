@@ -21,6 +21,17 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function photo(Request $request)
+    {
+        $user = $request->user();
+
+        if (! $user->foto || ! Storage::disk('public')->exists($user->foto)) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->response($user->foto);
+    }
+
     /**
      * Update the user's profile information.
      */

@@ -1,13 +1,14 @@
 @php
     $jenisPelanggaran = $jenisPelanggaran ?? null;
     $mode = $mode ?? 'create';
+    $formValues = $formValues ?? [];
     $rules = \App\Models\JenisPelanggaran::fuzzyRules();
 @endphp
 
 <div
     class="grid gap-4"
     x-data="{
-        point: '{{ old('poin_pelanggaran', $jenisPelanggaran?->poin_pelanggaran) }}',
+        point: '{{ $formValues['poin_pelanggaran'] ?? ($jenisPelanggaran?->poin_pelanggaran) }}',
         rules: @js($rules),
         get selectedRule() {
             if (this.point === '' || this.point === null) {
@@ -28,7 +29,7 @@
             id="{{ $mode }}-kode-pelanggaran-{{ $jenisPelanggaran?->id ?? 'new' }}"
             name="kode_pelanggaran"
             type="text"
-            value="{{ old('kode_pelanggaran', $jenisPelanggaran?->kode_pelanggaran) }}"
+            value="{{ $formValues['kode_pelanggaran'] ?? ($jenisPelanggaran?->kode_pelanggaran) }}"
             placeholder="Contoh: P001"
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             required
@@ -47,7 +48,7 @@
             id="{{ $mode }}-nama-pelanggaran-{{ $jenisPelanggaran?->id ?? 'new' }}"
             name="nama_pelanggaran"
             type="text"
-            value="{{ old('nama_pelanggaran', $jenisPelanggaran?->nama_pelanggaran) }}"
+            value="{{ $formValues['nama_pelanggaran'] ?? ($jenisPelanggaran?->nama_pelanggaran) }}"
             placeholder="Contoh: Tidak memakai atribut sekolah"
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             required
@@ -68,7 +69,7 @@
             min="0"
             max="300"
             step="1"
-            value="{{ old('poin_pelanggaran', $jenisPelanggaran?->poin_pelanggaran) }}"
+            value="{{ $formValues['poin_pelanggaran'] ?? ($jenisPelanggaran?->poin_pelanggaran) }}"
             placeholder="Contoh: 12"
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             x-model="point"

@@ -13,6 +13,9 @@
             'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
         ];
     @endphp
+    @php
+        $isCreateModalActive = $activeModal === 'create-jenis-pelanggaran';
+    @endphp
 
     <div class="space-y-6">
         <div class="flex flex-col justify-between gap-4 rounded-xl bg-white p-6 shadow-sm sm:flex-row sm:items-center">
@@ -169,7 +172,15 @@
         <form action="{{ route('pelanggarans.store') }}" method="POST" class="space-y-5">
             @csrf
 
-            @include('pelanggarans.partials.form', ['jenisPelanggaran' => null, 'mode' => 'create'])
+            @include('pelanggarans.partials.form', [
+                'jenisPelanggaran' => null,
+                'mode' => 'create',
+                'formValues' => [
+                    'kode_pelanggaran' => $isCreateModalActive ? old('kode_pelanggaran') : null,
+                    'nama_pelanggaran' => $isCreateModalActive ? old('nama_pelanggaran') : null,
+                    'poin_pelanggaran' => $isCreateModalActive ? old('poin_pelanggaran') : null,
+                ],
+            ])
 
             <div class="flex justify-end gap-3 border-t border-gray-100 pt-5">
                 <button
@@ -207,11 +218,19 @@
         />
 
         <x-ui.modal-box name="edit-jenis-pelanggaran-{{ $jenisPelanggaran->id }}" title="Edit Jenis Pelanggaran" :show="$activeModal === 'edit-jenis-pelanggaran-'.$jenisPelanggaran->id">
-            <form action="{{ route('pelanggarans.update', $jenisPelanggaran) }}" method="POST" class="space-y-5">
+            <form action="{{ route('pelanggarans.update', ['pelanggaran' => $jenisPelanggaran->getKey()]) }}" method="POST" class="space-y-5">
                 @csrf
-                @method('PUT')
+                @method('PATCH')
 
-                @include('pelanggarans.partials.form', ['jenisPelanggaran' => $jenisPelanggaran, 'mode' => 'edit'])
+                @include('pelanggarans.partials.form', [
+                    'jenisPelanggaran' => $jenisPelanggaran,
+                    'mode' => 'edit',
+                    'formValues' => [
+                        'kode_pelanggaran' => $jenisPelanggaran->kode_pelanggaran,
+                        'nama_pelanggaran' => $jenisPelanggaran->nama_pelanggaran,
+                        'poin_pelanggaran' => $jenisPelanggaran->poin_pelanggaran,
+                    ],
+                ])
 
                 <div class="flex justify-end gap-3 border-t border-gray-100 pt-5">
                     <button
@@ -232,7 +251,7 @@
         </x-ui.modal-box>
 
         <x-ui.modal-box name="delete-jenis-pelanggaran-{{ $jenisPelanggaran->id }}" title="Hapus Jenis Pelanggaran" max-width="md">
-            <form action="{{ route('pelanggarans.destroy', $jenisPelanggaran) }}" method="POST" class="space-y-5">
+            <form action="{{ route('pelanggarans.destroy', ['pelanggaran' => $jenisPelanggaran->getKey()]) }}" method="POST" class="space-y-5">
                 @csrf
                 @method('DELETE')
 

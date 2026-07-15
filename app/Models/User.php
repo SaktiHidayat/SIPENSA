@@ -30,4 +30,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->foto) {
+            return route('profile.photo');
+        }
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->nama ?? 'SIPENSA').'&background=111827&color=ffffff';
+    }
 }

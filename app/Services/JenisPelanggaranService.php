@@ -35,18 +35,22 @@ class JenisPelanggaranService
 
     public function update(JenisPelanggaran $jenisPelanggaran, array $data): JenisPelanggaran
     {
-        $jenisPelanggaran->update([
-            'kode_pelanggaran' => $data['kode_pelanggaran'],
-            'nama_pelanggaran' => $data['nama_pelanggaran'],
-            'poin_pelanggaran' => $data['poin_pelanggaran'],
-        ]);
+        $jenisPelanggaran->newQuery()
+            ->whereKey($jenisPelanggaran->id)
+            ->update(array_filter([
+                'kode_pelanggaran' => $data['kode_pelanggaran'] ?? $jenisPelanggaran->kode_pelanggaran,
+                'nama_pelanggaran' => $data['nama_pelanggaran'] ?? $jenisPelanggaran->nama_pelanggaran,
+                'poin_pelanggaran' => $data['poin_pelanggaran'] ?? $jenisPelanggaran->poin_pelanggaran,
+            ], static fn ($value) => $value !== null));
 
         return $jenisPelanggaran;
     }
 
     public function delete(JenisPelanggaran $jenisPelanggaran): void
     {
-        $jenisPelanggaran->delete();
+        $jenisPelanggaran->newQuery()
+            ->whereKey($jenisPelanggaran->id)
+            ->delete();
     }
 
     public function fuzzyRules(): array

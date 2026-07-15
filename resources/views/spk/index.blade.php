@@ -6,6 +6,7 @@
     @php
         $spks = $spks ?? collect();
         $searchTanggal = $searchTanggal ?? request('tanggal', '');
+        $latestSpk = $spks->first();
         $formatNumber = function ($value, int $precision = 4) {
             if ($value === null || $value === '') {
                 return '0';
@@ -22,25 +23,80 @@
             'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
             'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
         ];
+        $pelanggaranBadgeClasses = [
+            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
+            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
+            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
+            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
+        ];
+        $keterlibatanBadgeClasses = [
+            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
+            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
+            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
+            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
+        ];
     @endphp
 
     <div class="space-y-6">
         <x-ui.section-card
             title="Data SPK"
-            subtitle="Satu tabel hasil SPK untuk siswa yang dipilih."
+            subtitle="Ringkasan hasil SPK terbaru untuk siswa yang dipilih."
         >
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div class="max-w-3xl space-y-2">
-                    <p class="text-sm text-gray-600">
-                        Gunakan form proses untuk menghitung sanksi siswa berdasarkan jenis pelanggaran dan tingkat keterlibatan.
-                    </p>
+                <div class="max-w-4xl space-y-3">
+                    @if ($latestSpk)
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                                Hasil SPK Terkini
+                            </span>
+                            <span class="text-sm font-semibold text-gray-900">
+                                {{ $latestSpk->siswa?->nama ?? '-' }}
+                            </span>
+                            <span class="text-sm text-gray-500">
+                                NISN {{ $latestSpk->siswa?->nisn ?? '-' }}
+                            </span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">C1 (Jenis Pelanggaran)</p>
+                                <div class="mt-2 flex flex-wrap items-center gap-2">
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $pelanggaranBadgeClasses[strtolower($latestSpk->jenisPelanggaran?->kategori_fuzzy ?? '')] ?? 'bg-zinc-100 text-zinc-700 ring-zinc-200' }}">
+                                        {{ $latestSpk->jenisPelanggaran?->nama_pelanggaran ?? '-' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">C2 (Tingkat Keterlibatan)</p>
+                                <div class="mt-2 flex flex-wrap items-center gap-2">
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $keterlibatanBadgeClasses[strtolower($latestSpk->tingkatKeterlibatan?->kategori ?? '')] ?? 'bg-zinc-100 text-zinc-700 ring-zinc-200' }}">
+                                        {{ $latestSpk->tingkatKeterlibatan?->nama_keterangan ?? '-' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hukuman</p>
+                                <div class="mt-2 flex flex-wrap items-center gap-2">
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $hukumanBadgeClasses[strtolower($latestSpk->kategori_hukuman ?? '')] ?? 'bg-zinc-100 text-zinc-700 ring-zinc-200' }}">
+                                        {{ $latestSpk->nama_hukuman ?? $latestSpk->jenisHukuman?->nama_hukuman ?? '-' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-sm text-gray-600">
+                            Belum ada hasil SPK terbaru. Silakan gunakan form proses untuk menghitung sanksi siswa.
+                        </p>
+                    @endif
                 </div>
 
-                <div class="flex gap-3">
-                    <x-ui.action-button type="button" x-data x-on:click="$dispatch('open-modal', 'proses-spk')">
-                        Proses
-                    </x-ui.action-button>
-                </div>
+                <x-ui.action-button type="button" x-data x-on:click="$dispatch('open-modal', 'proses-spk')">
+                    Proses
+                </x-ui.action-button>
             </div>
         </x-ui.section-card>
 
@@ -171,6 +227,16 @@
                         Belum ada data alternatif yang dipakai.
                     </div>
                 @endif
+
+                <div class="flex justify-end border-t border-gray-100 pt-5">
+                    <button
+                        type="button"
+                        class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                        x-on:click="$dispatch('close-modal', 'alternatif-spk-{{ $spk->id }}')"
+                    >
+                        Tutup
+                    </button>
+                </div>
             </div>
         </x-ui.modal-box>
 

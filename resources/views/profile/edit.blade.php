@@ -4,9 +4,7 @@
 
 @section('content')
     @php
-        $photoUrl = $user->foto
-            ? asset('storage/'.$user->foto)
-            : 'https://ui-avatars.com/api/?name='.urlencode($user->nama).'&background=111827&color=ffffff';
+        $photoUrl = $user->foto_url;
     @endphp
 
     <div class="space-y-6">

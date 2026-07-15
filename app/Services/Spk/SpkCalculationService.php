@@ -45,13 +45,14 @@ class SpkCalculationService
 
             $comparisonCount = (clone $comparisonQuery)->count();
 
-            if ($comparisonCount < 10) {
+            if ($comparisonCount < 2) {
                 throw ValidationException::withMessages([
-                    'siswa_id' => 'Data alternatif untuk proses penilaian minimal 10.',
+                    'siswa_id' => 'Data alternatif untuk proses penilaian minimal 2.',
                 ]);
             }
 
-            $comparisonAlternatifs = $comparisonQuery->inRandomOrder()->limit(10)->get();
+            $comparisonLimit = random_int(2, min(10, $comparisonCount));
+            $comparisonAlternatifs = $comparisonQuery->inRandomOrder()->limit($comparisonLimit)->get();
 
             // 3. Menentukan bobot kriteria dari tabel kriterias dan menormalkannya.
             $kriterias = Kriteria::query()->oldest()->take(2)->get();

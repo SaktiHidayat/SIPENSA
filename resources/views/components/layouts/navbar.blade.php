@@ -27,7 +27,7 @@ class="bg-white border-b shadow-sm">
 
     {{-- Right --}}
 
-    <div
+<div
         x-data="{open:false}"
         class="relative">
 
@@ -39,9 +39,10 @@ class="bg-white border-b shadow-sm">
 
             <img
 
-                src="{{ auth()->user()->foto ? asset('storage/'.auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=111827&color=ffffff' }}"
+                src="{{ auth()->user()->foto_url }}"
+                onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=111827&color=ffffff';"
 
-                class="w-10 h-10 rounded-full object-cover">
+                class="w-10 h-10 shrink-0 rounded-full object-cover">
 
             <div class="hidden md:block text-left">
 

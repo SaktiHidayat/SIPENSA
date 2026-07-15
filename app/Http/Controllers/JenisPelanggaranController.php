@@ -6,6 +6,7 @@ use App\Models\JenisPelanggaran;
 use App\Services\JenisPelanggaranService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -38,45 +39,81 @@ class JenisPelanggaranController extends Controller
                 ->with('modal', 'create-jenis-pelanggaran');
         }
 
-        $this->jenisPelanggaranService->create($validator->validated());
+        try {
+            $this->jenisPelanggaranService->create($validator->validated());
+        } catch (QueryException $exception) {
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Data jenis pelanggaran gagal ditambahkan. Silakan cek kembali data yang diisi.');
+        }
 
         return to_route('pelanggarans.index')->with('success', 'Data jenis pelanggaran berhasil ditambahkan.');
     }
 
-    public function update(Request $request, JenisPelanggaran $jenisPelanggaran): RedirectResponse
+    public function update(Request $request, string $pelanggaran): RedirectResponse
     {
-        $validator = Validator::make($request->all(), $this->rules($jenisPelanggaran), $this->messages());
+        $current = JenisPelanggaran::query()->findOrFail($pelanggaran);
+        $kodePelanggaran = trim((string) $request->input('kode_pelanggaran', $current->kode_pelanggaran));
+        $validator = Validator::make(
+            $request->all(),
+            $this->rules($current, $kodePelanggaran),
+            $this->messages()
+        );
 
         if ($validator->fails()) {
             return back()
                 ->withErrors($validator)
                 ->withInput()
-                ->with('modal', 'edit-jenis-pelanggaran-'.$jenisPelanggaran->id);
+                ->with('modal', 'edit-jenis-pelanggaran-'.$current->id);
         }
 
-        $this->jenisPelanggaranService->update($jenisPelanggaran, $validator->validated());
+        try {
+            $this->jenisPelanggaranService->update($current, $validator->validated());
+        } catch (QueryException $exception) {
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Data jenis pelanggaran gagal diperbarui. Silakan cek kembali data yang diisi.');
+        }
 
         return to_route('pelanggarans.index')->with('success', 'Data jenis pelanggaran berhasil diperbarui.');
     }
 
-    public function destroy(JenisPelanggaran $jenisPelanggaran): RedirectResponse
+    public function destroy(string $pelanggaran): RedirectResponse
     {
-        $this->jenisPelanggaranService->delete($jenisPelanggaran);
+        try {
+            $current = JenisPelanggaran::query()->findOrFail($pelanggaran);
+            $this->jenisPelanggaranService->delete($current);
+        } catch (QueryException $exception) {
+            report($exception);
+
+            return back()->with('error', 'Data jenis pelanggaran gagal dihapus karena masih dipakai oleh data lain.');
+        }
 
         return to_route('pelanggarans.index')->with('success', 'Data jenis pelanggaran berhasil dihapus.');
     }
 
-    private function rules(?JenisPelanggaran $jenisPelanggaran = null): array
+    private function rules(?JenisPelanggaran $jenisPelanggaran = null, ?string $kodePelanggaran = null): array
     {
+        $kodePelanggaran = $kodePelanggaran ?? '';
+
+        $kodeRules = [
+            $jenisPelanggaran ? 'nullable' : 'required',
+            'string',
+            'max:50',
+        ];
+
+        if ($jenisPelanggaran === null || $kodePelanggaran !== $jenisPelanggaran->kode_pelanggaran) {
+            $kodeRules[] = Rule::unique('jenis_pelanggarans', 'kode_pelanggaran')->ignore($jenisPelanggaran?->id);
+        }
+
         return [
-            'kode_pelanggaran' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('jenis_pelanggarans', 'kode_pelanggaran')->ignore($jenisPelanggaran?->id),
-            ],
-            'nama_pelanggaran' => ['required', 'string', 'max:255'],
-            'poin_pelanggaran' => ['required', 'integer', 'min:0', 'max:300'],
+            'kode_pelanggaran' => $kodeRules,
+            'nama_pelanggaran' => [$jenisPelanggaran ? 'nullable' : 'required', 'string', 'max:255'],
+            'poin_pelanggaran' => [$jenisPelanggaran ? 'nullable' : 'required', 'integer', 'min:0', 'max:300'],
         ];
     }
 

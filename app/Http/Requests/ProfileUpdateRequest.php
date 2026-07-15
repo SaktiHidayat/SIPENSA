@@ -23,7 +23,11 @@ class ProfileUpdateRequest extends FormRequest
                 'max:100',
                 Rule::unique(User::class, 'username')->ignore($this->user()->id),
             ],
-            'nip' => ['nullable', 'regex:/^\d{18}$/'],
+            'nip' => [
+                'nullable',
+                'regex:/^\d{18}$/',
+                Rule::unique(User::class, 'nip')->ignore($this->user()->id),
+            ],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
@@ -40,6 +44,7 @@ class ProfileUpdateRequest extends FormRequest
             'username.max' => 'Username maksimal 100 karakter.',
             'username.unique' => 'Username ini sudah digunakan. Silakan gunakan username lain.',
             'nip.regex' => 'NIP harus tepat 18 digit angka, tidak boleh kurang atau lebih.',
+            'nip.unique' => 'NIP ini sudah digunakan. Silakan gunakan NIP lain.',
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'jenis_kelamin.in' => 'Jenis kelamin yang dipilih tidak valid.',
             'foto.image' => 'Foto profil harus berupa gambar.',
