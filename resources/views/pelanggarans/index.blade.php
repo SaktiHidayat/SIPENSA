@@ -5,13 +5,6 @@
 @section('content')
     @php
         $activeModal = session('modal');
-        $levelBadgeClasses = [
-            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
-            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
-            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
-            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
-        ];
     @endphp
     @php
         $isCreateModalActive = $activeModal === 'create-jenis-pelanggaran';
@@ -46,7 +39,7 @@
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Catatan Pengisian</h2>
                         <p class="mt-1 text-sm text-gray-500">
-                            Kode pelanggaran diisi manual, lalu poin pelanggaran akan dipetakan otomatis ke kategori dan skala fuzzy.
+                            Kode pelanggaran diisi manual, lalu poin akan dipetakan otomatis ke skala fuzzy.
                         </p>
                     </div>
                 </div>
@@ -56,7 +49,7 @@
                     <ol class="mt-2 space-y-2 list-decimal pl-5">
                         <li>Admin mengisi kode dan nama pelanggaran.</li>
                         <li>Admin memasukkan poin pelanggaran sesuai tingkat pelanggaran.</li>
-                        <li>Sistem menentukan kategori dan skala fuzzy secara otomatis.</li>
+                        <li>Sistem menentukan skala fuzzy secara otomatis.</li>
                     </ol>
                 </div>
             </div>
@@ -72,7 +65,6 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rentang Poin</th>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</th>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rumus</th>
                                 <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Skala Fuzzy</th>
                             </tr>
@@ -80,8 +72,9 @@
                         <tbody class="divide-y divide-gray-100 bg-white">
                             @foreach ($fuzzyRules as $rule)
                                 <tr>
-                                    <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">{{ $rule['min'] }} - {{ $rule['max'] }}</td>
-                                    <td class="whitespace-nowrap px-5 py-4 text-gray-700">{{ $rule['kategori'] }}</td>
+                                    <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">
+                                        {{ $rule['min'] === $rule['max'] ? $rule['min'] : $rule['min'].' - '.$rule['max'] }}
+                                    </td>
                                     <td class="px-5 py-4 text-gray-600">{{ $rule['rumus'] }}</td>
                                     <td class="whitespace-nowrap px-5 py-4">
                                         <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
@@ -123,15 +116,8 @@
                     <td class="whitespace-nowrap px-5 py-4 text-gray-700">
                         {{ $jenisPelanggaran->poin_pelanggaran }}
                     </td>
-                    <td class="whitespace-nowrap px-5 py-4">
-                        <div class="flex flex-col gap-1">
-                            <span class="inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $levelBadgeClasses[strtolower($jenisPelanggaran->kategori_fuzzy)] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">
-                                {{ $jenisPelanggaran->kategori_fuzzy }}
-                            </span>
-                            <span class="text-xs text-gray-500">
-                                Skala {{ rtrim(rtrim(number_format((float) $jenisPelanggaran->skala_fuzzy, 2, '.', ''), '0'), '.') }}
-                            </span>
-                        </div>
+                    <td class="whitespace-nowrap px-5 py-4 text-gray-700">
+                        {{ rtrim(rtrim(number_format((float) $jenisPelanggaran->skala_fuzzy, 2, '.', ''), '0'), '.') }}
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <div class="flex items-center gap-2">
@@ -208,9 +194,7 @@
                 'Kode Pelanggaran' => $jenisPelanggaran->kode_pelanggaran,
                 'Nama Pelanggaran' => $jenisPelanggaran->nama_pelanggaran,
                 'Poin Pelanggaran' => $jenisPelanggaran->poin_pelanggaran,
-                'Kategori Fuzzy' => $jenisPelanggaran->kategori_fuzzy,
                 'Skala Fuzzy' => rtrim(rtrim(number_format((float) $jenisPelanggaran->skala_fuzzy, 2, '.', ''), '0'), '.'),
-                'Rentang' => $jenisPelanggaran->rentang_poin,
                 'Rumus' => $jenisPelanggaran->rumus_fuzzy,
                 'Dibuat' => $jenisPelanggaran->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $jenisPelanggaran->updated_at?->format('d M Y H:i'),

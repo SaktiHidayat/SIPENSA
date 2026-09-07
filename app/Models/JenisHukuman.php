@@ -11,75 +11,24 @@ class JenisHukuman extends Model
     protected $fillable = [
         'kode_hukuman',
         'nama_hukuman',
-        'kategori',
         'rentang_poin',
     ];
 
-    public static function categories(): array
-    {
-        return [
-            'sangat rendah' => 'Sangat Rendah',
-            'rendah' => 'Rendah',
-            'sedang' => 'Sedang',
-            'tinggi' => 'Tinggi',
-            'sangat tinggi' => 'Sangat Tinggi',
-        ];
-    }
-
-    public static function ranges(): array
-    {
-        return [
-            'sangat rendah' => '0 - 0.15',
-            'rendah' => '0.16 - 0.3',
-            'sedang' => '0.31 - 0.55',
-            'tinggi' => '0.56 - 0.8',
-            'sangat tinggi' => '0.81 - 1',
-        ];
-    }
-
-    public static function rangeForCategory(?string $kategori): string
-    {
-        return static::ranges()[$kategori] ?? '';
-    }
-
     public function getRentangPoinDisplayAttribute(): string
     {
-        return $this->rentang_poin ?: static::rangeForCategory($this->kategori);
+        return (string) $this->rentang_poin;
     }
 
-    public static function ruleForScore(float $score): array
+    public function containsFinalValue(float $finalValue): bool
     {
-        if ($score <= 0.15) {
-            return [
-                'kategori' => 'Sangat Rendah',
-                'rentang_poin' => '0 - 0.15',
-            ];
+        if (preg_match('/^\s*(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)(?:\+)?\s*$/', (string) $this->rentang_poin, $matches)) {
+            $minimum = (float) $matches[1];
+            $maximum = (float) $matches[2];
+
+            return $finalValue >= $minimum && $finalValue <= $maximum;
         }
 
-        if ($score <= 0.3) {
-            return [
-                'kategori' => 'Rendah',
-                'rentang_poin' => '0.16 - 0.3',
-            ];
-        }
-
-        if ($score <= 0.55) {
-            return [
-                'kategori' => 'Sedang',
-                'rentang_poin' => '0.31 - 0.55',
-            ];
-        }
-
-        if ($score <= 0.8) {
-            return [
-                'kategori' => 'Tinggi',
-                'rentang_poin' => '0.56 - 0.8',
-            ];
-        }
-
-        return [
-            'kategori' => 'Sangat Tinggi',
-            'rentang_poin' => '0.81 - 1',
-        ];
+        return is_numeric($this->rentang_poin) && $finalValue === (float) $this->rentang_poin;
     }
+
 }

@@ -9,7 +9,6 @@ class TingkatKeterlibatan extends Model
     protected $fillable = [
         'kode_tingkat_keterlibatan',
         'nama_keterangan',
-        'kategori',
         'skala_fuzzy',
     ];
 
@@ -28,7 +27,7 @@ class TingkatKeterlibatan extends Model
                 'point' => 1,
                 'order' => 1,
                 'kategori' => 'Sangat Rendah',
-                'rumus' => '1/(5-1)=1/4=0',
+                'rumus' => '0/(5-1)=0/4=0',
                 'skala_fuzzy' => 0,
             ],
             [
@@ -60,7 +59,7 @@ class TingkatKeterlibatan extends Model
                 'point' => 5,
                 'order' => 5,
                 'kategori' => 'Sangat Tinggi',
-                'rumus' => '5/(5-1)=5/4=1',
+                'rumus' => '4/(5-1)=4/4=1',
                 'skala_fuzzy' => 1,
             ],
         ];

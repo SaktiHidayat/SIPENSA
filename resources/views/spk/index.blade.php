@@ -5,7 +5,6 @@
 @section('content')
     @php
         $spks = $spks ?? collect();
-        $searchTanggal = $searchTanggal ?? request('tanggal', '');
         $latestSpk = $spks->first();
         $formatNumber = function ($value, int $precision = 4) {
             if ($value === null || $value === '') {
@@ -16,13 +15,6 @@
 
             return rtrim(rtrim($formatted, '0'), '.');
         };
-        $hukumanBadgeClasses = [
-            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
-            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
-            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
-            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
-        ];
         $pelanggaranBadgeClasses = [
             'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
             'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
@@ -79,9 +71,14 @@
                             </div>
 
                             <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Total Nilai Akhir</p>
+                                <p class="mt-2 text-lg font-semibold text-gray-900">{{ $formatNumber($latestSpk->total_nilai_akhir, 4) }}</p>
+                            </div>
+
+                            <div class="rounded-xl border border-gray-200 bg-white px-4 py-3">
                                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Hukuman</p>
                                 <div class="mt-2 flex flex-wrap items-center gap-2">
-                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $hukumanBadgeClasses[strtolower($latestSpk->kategori_hukuman ?? '')] ?? 'bg-zinc-100 text-zinc-700 ring-zinc-200' }}">
+                                    <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                                         {{ $latestSpk->nama_hukuman ?? $latestSpk->jenisHukuman?->nama_hukuman ?? '-' }}
                                     </span>
                                 </div>
@@ -100,10 +97,21 @@
             </div>
         </x-ui.section-card>
 
-        <form action="{{ route('spk.index') }}" method="GET" class="grid gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:grid-cols-[1fr_auto] lg:items-end">
+        <div class="grid gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:grid-cols-[1fr_1.4fr_auto] lg:items-end">
+        <form action="{{ route('spk.index') }}" method="GET" class="contents">
             <div>
-                <label class="mb-1 block text-sm font-medium text-gray-700" for="tanggal">Tanggal</label>
-                <input id="tanggal" type="date" name="tanggal" value="{{ $searchTanggal }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700">
+                <label class="mb-1 block text-sm font-medium text-gray-700" for="search">Nama atau NISN</label>
+                <input id="search" type="search" name="search" value="{{ $searchStudent }}" placeholder="Cari nama siswa atau NISN..." class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700">
+            </div>
+            <div x-data="{ tanggalMulai: @js($searchTanggalMulai) }" class="grid gap-2 sm:grid-cols-2">
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700" for="tanggal_mulai">Tanggal Mulai</label>
+                    <input id="tanggal_mulai" type="date" name="tanggal_mulai" value="{{ $searchTanggalMulai }}" x-model="tanggalMulai" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700">
+                </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700" for="tanggal_akhir">Tanggal Akhir</label>
+                    <input id="tanggal_akhir" type="date" name="tanggal_akhir" value="{{ $searchTanggalAkhir }}" x-bind:min="tanggalMulai || null" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700">
+                </div>
             </div>
             <div class="flex gap-2">
                 <x-ui.action-button type="submit">Cari</x-ui.action-button>
@@ -112,17 +120,24 @@
                 </a>
             </div>
         </form>
+        </div>
 
-        <x-ui.section-card title="Hasil SPK" subtitle="Data disimpan di tabel spks.">
+        <x-ui.section-card title="Hasil SPK" subtitle="Nilai akhir dihitung dari kontribusi C1 dan C2 dengan bobot awal 0.75 dan 0.25.">
             <div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
                 <p class="text-sm text-gray-500">
                     Cetak PDF mengikuti tanggal yang sedang dicari. Kalau tanggal kosong, semua data akan dicetak.
                 </p>
-                <x-ui.print-pdf-button :href="route('spk.pdf', request()->only(['tanggal']))" />
+                <div class="flex items-center gap-2">
+                    <x-ui.print-pdf-button :href="route('spk.pdf', request()->only(['tanggal_mulai', 'tanggal_akhir', 'search']))" />
+                    <form action="{{ route('spk.reset-display') }}" method="POST">
+                        @csrf
+                        <x-ui.action-button variant="secondary" type="submit">Reset SPK</x-ui.action-button>
+                    </form>
+                </div>
             </div>
 
             <x-ui.datatable
-            :columns="['No', 'Nama', 'NISN', 'C1', 'C2', 'Hukuman', 'Aksi']"
+                :columns="['No', 'Nama', 'NISN', 'C1', 'C2', 'Total Nilai Akhir', 'Hukuman', 'Aksi']"
                 :items="$spks"
                 empty-message="Tidak ada data."
             >
@@ -143,7 +158,11 @@
                             <div class="text-xs text-gray-500">Skala: {{ $formatNumber($spk->skala_tingkat_keterlibatan, 2) }}</div>
                         </td>
                         <td class="px-5 py-4 text-gray-700">
-                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $hukumanBadgeClasses[strtolower($spk->kategori_hukuman ?? '')] ?? 'bg-zinc-100 text-zinc-700 ring-zinc-200' }}">
+                            <div class="font-semibold">{{ $formatNumber($spk->total_nilai_akhir, 4) }}</div>
+                            <div class="text-xs text-gray-500">Total nilai akhir</div>
+                        </td>
+                        <td class="px-5 py-4 text-gray-700">
+                            <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                                 {{ $spk->nama_hukuman ?? $spk->jenisHukuman?->nama_hukuman ?? '-' }}
                             </span>
                         </td>
@@ -173,13 +192,14 @@
                 'siswas' => $siswas,
                 'jenisPelanggarans' => $jenisPelanggarans,
                 'tingkatKeterlibatans' => $tingkatKeterlibatans,
+                'pointTotals' => $pointTotals,
             ])
 
             <div class="flex justify-end gap-3 border-t border-gray-100 pt-5">
                 <button type="button" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50" x-on:click="$dispatch('close-modal', 'proses-spk')">
                     Batal
                 </button>
-                <x-ui.action-button type="submit">Simpan & Proses</x-ui.action-button>
+                <x-ui.action-button type="submit">Simpan Poin</x-ui.action-button>
             </div>
         </form>
     </x-ui.modal-box>
@@ -192,31 +212,48 @@
                         <table class="min-w-full divide-y divide-gray-200 text-sm">
                             <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                                 <tr>
+                                    <th class="px-4 py-3">No</th>
                                     <th class="px-4 py-3">Nama</th>
                                     <th class="px-4 py-3">NISN</th>
                                     <th class="px-4 py-3">C1</th>
+                                    <th class="px-4 py-3">Poin C1</th>
                                     <th class="px-4 py-3">Skala C1</th>
                                     <th class="px-4 py-3">Norm C1</th>
+                                    <th class="px-4 py-3">Bobot Awal C1</th>
+                                    <th class="px-4 py-3">Kontribusi C1</th>
                                     <th class="px-4 py-3">C2</th>
                                     <th class="px-4 py-3">Skala C2</th>
                                     <th class="px-4 py-3">Norm C2</th>
-                                    <th class="px-4 py-3">Nilai Akhir</th>
+                                    <th class="px-4 py-3">Bobot Awal C2</th>
+                                    <th class="px-4 py-3">Kontribusi C2</th>
+                                    <th class="px-4 py-3">Poin Akhir</th>
                                     <th class="px-4 py-3">Hukuman</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 bg-white">
                                 @foreach ($spk->alternatif_snapshot as $alternatif)
                                     <tr>
+                                        <td class="px-4 py-3 text-gray-500">{{ $loop->iteration }}</td>
                                         <td class="px-4 py-3 font-semibold text-gray-900">{{ $alternatif['nama'] ?? '-' }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $alternatif['nisn'] ?? '-' }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $alternatif['c1'] ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['poin_c1'] ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['skala_c1'] ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['normalisasi_c1'] ?? 0, 4) }}</td>
+                                        <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['bobot_c1'] ?? 0.75, 2) }}</td>
+                                        <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['kontribusi_c1'] ?? 0, 4) }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $alternatif['c2'] ?? '-' }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['skala_c2'] ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['normalisasi_c2'] ?? 0, 4) }}</td>
+                                        <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['bobot_c2'] ?? 0.25, 2) }}</td>
+                                        <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['kontribusi_c2'] ?? 0, 4) }}</td>
                                         <td class="px-4 py-3 text-gray-700">{{ $formatNumber($alternatif['nilai_akhir'] ?? 0, 4) }}</td>
-                                        <td class="px-4 py-3 text-gray-700">{{ $alternatif['hukuman'] ?? 'Tidak ada' }}</td>
+                                        <td class="px-4 py-3 text-gray-700">
+                                            <div>{{ $alternatif['hukuman'] ?? 'Belum ada yang cocok' }}</div>
+                                            @if (! empty($alternatif['rentang_poin_hukuman']))
+                                                <div class="text-xs text-gray-500">{{ $alternatif['rentang_poin_hukuman'] }}</div>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -262,6 +299,10 @@
                         <p class="text-xs font-semibold uppercase text-gray-500">NISN</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $spk->siswa?->nisn ?? '-' }}</p>
                     </div>
+                    <div class="border-b border-gray-200 pb-2 pt-2 sm:col-span-2 lg:col-span-3">
+                        <p class="text-sm font-bold uppercase tracking-wide text-gray-900">C1 - Jenis Pelanggaran</p>
+                        <p class="mt-1 text-xs text-gray-500">Bobot Awal C1: 0.75</p>
+                    </div>
                     <div class="rounded-lg bg-gray-50 p-3">
                         <p class="text-xs font-semibold uppercase text-gray-500">Jenis Pelanggaran (C1)</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $spk->jenisPelanggaran?->nama_pelanggaran ?? '-' }}</p>
@@ -271,8 +312,24 @@
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->skala_jenis_pelanggaran, 2) }}</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Poin C1</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $spk->poin_jenis_pelanggaran }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Bobot Awal C1</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">0.75</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
                         <p class="text-xs font-semibold uppercase text-gray-500">Norm C1</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->normalisasi_c1, 4) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Kontribusi C1</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber((float) $spk->normalisasi_c1 * 0.75, 4) }}</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-2 pt-4 sm:col-span-2 lg:col-span-3">
+                        <p class="text-sm font-bold uppercase tracking-wide text-gray-900">C2 - Tingkat Keterlibatan</p>
+                        <p class="mt-1 text-xs text-gray-500">Bobot Awal C2: 0.25</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3">
                         <p class="text-xs font-semibold uppercase text-gray-500">Tingkat Keterlibatan (C2)</p>
@@ -283,16 +340,40 @@
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->skala_tingkat_keterlibatan, 2) }}</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Bobot Awal C2</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">0.25</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
                         <p class="text-xs font-semibold uppercase text-gray-500">Norm C2</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->normalisasi_c2, 4) }}</p>
                     </div>
-                    <div class="rounded-lg bg-gray-50 p-3 lg:col-span-2">
-                        <p class="text-xs font-semibold uppercase text-gray-500">Nilai Akhir</p>
-                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->nilai_akhir, 4) }}</p>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Kontribusi C2</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber((float) $spk->normalisasi_c2 * 0.25, 4) }}</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-2 pt-4 sm:col-span-2 lg:col-span-3">
+                        <p class="text-sm font-bold uppercase tracking-wide text-gray-900">Ringkasan Hasil</p>
+                        <p class="mt-1 text-xs text-gray-500">Nilai akhir sebelumnya, sekarang, dan total.</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Nilai Akhir Sekarang</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->nilai_akhir_sekarang, 4) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Nilai Akhir Sebelumnya</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->nilai_akhir_sebelumnya, 4) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Total Nilai Akhir</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $formatNumber($spk->total_nilai_akhir, 4) }}</p>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3">
                         <p class="text-xs font-semibold uppercase text-gray-500">Hukuman</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900">{{ $spk->nama_hukuman ?? $spk->jenisHukuman?->nama_hukuman ?? '-' }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold uppercase text-gray-500">Rentang Poin Hukuman</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900">{{ $spk->rentang_poin_hukuman ?? $spk->jenisHukuman?->rentang_poin ?? '-' }}</p>
                     </div>
                 </div>
 

@@ -23,7 +23,6 @@ class SpkProsesHasil extends Model
         'jenis_hukuman_id',
         'kode_hukuman',
         'nama_hukuman',
-        'kategori_hukuman',
         'rentang_poin_hukuman',
         'ranking',
     ];

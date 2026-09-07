@@ -16,6 +16,9 @@
     } elseif (! $flashMessage && session('error')) {
         $flashType = 'error';
         $flashMessage = session('error');
+    } elseif (! $flashMessage && session('info')) {
+        $flashType = 'info';
+        $flashMessage = session('info');
     } elseif (! $flashMessage && $errors->any()) {
         $flashType = 'error';
         $flashMessage = $errors->first();

@@ -15,10 +15,17 @@
     <h1>Hasil SPK</h1>
     <div class="muted">
         Cetak:
-        @if ($tanggal)
-            Berdasarkan tanggal
+        @if (($tanggal ?? '') || ($tanggal_mulai ?? '') || ($tanggal_akhir ?? '') || ($search ?? ''))
+            Berdasarkan filter
             <br>
-            Tanggal: {{ $tanggal ?: '-' }}
+            @if ($tanggal ?? '')
+                Tanggal: {{ $tanggal }}
+            @elseif (($tanggal_mulai ?? '') || ($tanggal_akhir ?? ''))
+                Tanggal: {{ $tanggal_mulai ?: 'awal' }} sampai {{ $tanggal_akhir ?: 'akhir' }}
+            @endif
+            @if ($search ?? '')
+                Nama/NISN: {{ $search }}
+            @endif
         @else
             Semua data
         @endif
@@ -42,6 +49,7 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NISN</th>
+                <th>Total Poin</th>
                 <th>C1</th>
                 <th>C2</th>
                 <th>Nilai Akhir</th>
@@ -75,6 +83,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $spk->siswa?->nama ?? '-' }}</td>
                     <td>{{ $spk->siswa?->nisn ?? '-' }}</td>
+                    <td>{{ $spk->total_poin }}</td>
                     <td>{{ $formatNumber($spk->skala_jenis_pelanggaran, 2) }}</td>
                     <td>{{ $formatNumber($spk->skala_tingkat_keterlibatan, 2) }}</td>
                     <td>{{ $formatNumber($spk->nilai_akhir, 4) }}</td>
@@ -85,7 +94,7 @@
                     <td>{{ $alternatifHukuman }}</td>
                 </tr>
             @empty
-                <tr><td colspan="11">Tidak ada data.</td></tr>
+                <tr><td colspan="12">Tidak ada data.</td></tr>
             @endforelse
         </tbody>
     </table>

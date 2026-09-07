@@ -71,13 +71,6 @@
         <p class="text-sm font-semibold text-gray-800">Preview Otomatis</p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
             <div class="rounded-lg bg-white p-3 shadow-sm">
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</p>
-                <p class="mt-1 text-sm font-semibold text-gray-900" x-text="selectedRule ? selectedRule.kategori : '-'">
-                    {{ $tingkatKeterlibatan?->kategori ?? '-' }}
-                </p>
-            </div>
-
-            <div class="rounded-lg bg-white p-3 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Skala Fuzzy</p>
                 <p class="mt-1 text-sm font-semibold text-gray-900" x-text="selectedRule ? selectedRule.skala_fuzzy : '-'">
                     {{ isset($tingkatKeterlibatan) && $tingkatKeterlibatan?->exists ? rtrim(rtrim(number_format((float) $tingkatKeterlibatan->skala_fuzzy, 2, '.', ''), '0'), '.') : '-' }}
@@ -88,6 +81,6 @@
 
     <div class="rounded-xl border border-dashed border-gray-300 bg-white p-4">
         <p class="text-sm font-semibold text-gray-800">Catatan</p>
-        <p class="mt-1 text-sm text-gray-600">Kategori dan skala fuzzy diambil otomatis dari pilihan keterangan.</p>
+        <p class="mt-1 text-sm text-gray-600">Skala fuzzy diambil otomatis dari pilihan keterangan.</p>
     </div>
 </div>

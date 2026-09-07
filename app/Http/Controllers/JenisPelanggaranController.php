@@ -40,7 +40,7 @@ class JenisPelanggaranController extends Controller
         }
 
         try {
-            $this->jenisPelanggaranService->create($validator->validated());
+            $this->jenisPelanggaranService->create($this->normalizeValidatedData($validator->validated()));
         } catch (QueryException $exception) {
             report($exception);
 
@@ -70,7 +70,7 @@ class JenisPelanggaranController extends Controller
         }
 
         try {
-            $this->jenisPelanggaranService->update($current, $validator->validated());
+            $this->jenisPelanggaranService->update($current, $this->normalizeValidatedData($validator->validated()));
         } catch (QueryException $exception) {
             report($exception);
 
@@ -113,7 +113,7 @@ class JenisPelanggaranController extends Controller
         return [
             'kode_pelanggaran' => $kodeRules,
             'nama_pelanggaran' => [$jenisPelanggaran ? 'nullable' : 'required', 'string', 'max:255'],
-            'poin_pelanggaran' => [$jenisPelanggaran ? 'nullable' : 'required', 'integer', 'min:0', 'max:300'],
+            'poin_pelanggaran' => [$jenisPelanggaran ? 'nullable' : 'required', 'integer', 'min:5', 'max:300'],
         ];
     }
 
@@ -128,9 +128,16 @@ class JenisPelanggaranController extends Controller
             'nama_pelanggaran.string' => 'Nama pelanggaran harus berupa teks.',
             'nama_pelanggaran.max' => 'Nama pelanggaran maksimal 255 karakter.',
             'poin_pelanggaran.required' => 'Poin pelanggaran wajib diisi.',
-            'poin_pelanggaran.integer' => 'Poin pelanggaran harus berupa angka bulat.',
-            'poin_pelanggaran.min' => 'Poin pelanggaran minimal 0.',
+            'poin_pelanggaran.integer' => 'Poin pelanggaran harus berupa satu angka bulat.',
+            'poin_pelanggaran.min' => 'Poin pelanggaran minimal 5.',
             'poin_pelanggaran.max' => 'Poin pelanggaran maksimal 300.',
         ];
+    }
+
+    private function normalizeValidatedData(array $data): array
+    {
+        $data['poin_pelanggaran'] = preg_replace('/\s+/', '', (string) $data['poin_pelanggaran']);
+
+        return $data;
     }
 }

@@ -215,8 +215,10 @@
                 'Jenis Pelanggaran' => $alternatif->jenisPelanggaran?->nama_pelanggaran,
                 'Poin Jenis Pelanggaran' => $alternatif->poin_jenis_pelanggaran,
                 'Skala Fuzzy C1' => $alternatif->skala_fuzzy_jenis_pelanggaran,
+                'Bobot Awal C1' => '0.75',
                 'Tingkat Keterlibatan' => $alternatif->tingkatKeterlibatan?->nama_keterangan,
                 'Skala Fuzzy C2' => $alternatif->skala_fuzzy_tingkat_keterlibatan,
+                'Bobot Awal C2' => '0.25',
                 'Dibuat' => $alternatif->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $alternatif->updated_at?->format('d M Y H:i'),
             ]"

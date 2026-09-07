@@ -5,14 +5,6 @@
 @section('content')
     @php
         $activeModal = session('modal');
-        $categories = \App\Models\JenisHukuman::categories();
-        $levelBadgeClasses = [
-            'sangat rendah' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-            'rendah' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
-            'sedang' => 'bg-yellow-50 text-yellow-700 ring-yellow-200',
-            'tinggi' => 'bg-rose-50 text-rose-700 ring-rose-200',
-            'sangat tinggi' => 'bg-red-50 text-red-700 ring-red-200',
-        ];
     @endphp
 
     <div class="space-y-6">
@@ -20,7 +12,7 @@
             <div>
                 <p class="text-sm font-medium uppercase tracking-wide text-gray-500">Master Data</p>
                 <h1 class="mt-1 text-2xl font-bold text-gray-900">Data Jenis Hukuman</h1>
-                <p class="mt-2 text-sm text-gray-500">Kelola kategori hukuman dan rentang poin yang terisi otomatis dari kategori.</p>
+                <p class="mt-2 text-sm text-gray-500">Kelola nama hukuman dan poin secara manual.</p>
             </div>
 
             <button
@@ -42,57 +34,55 @@
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Catatan Pengisian</h2>
                         <p class="mt-1 text-sm text-gray-500">
-                            Kategori dipilih dari opsi yang tersedia, lalu rentang poin terisi otomatis sesuai kategori.
+                            Semua data hukuman diisi manual sesuai poin yang ditentukan.
                         </p>
                     </div>
                 </div>
 
                 <div class="mt-5 rounded-lg bg-gray-50 p-4 text-sm text-gray-700">
-                    <p class="font-semibold text-gray-900">Kategori yang tersedia:</p>
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        @foreach ($categories as $label)
-                            <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200">
-                                {{ $label }}
-                            </span>
-                        @endforeach
-                    </div>
+                    <p class="font-semibold text-gray-900">Alur singkat:</p>
+                    <ol class="mt-2 list-decimal space-y-2 pl-5">
+                        <li>Admin mengisi kode hukuman.</li>
+                        <li>Admin mengisi nama atau jenis hukuman.</li>
+                        <li>Admin mengisi rentang poin, misalnya 0.10 - 0.30, lalu menyimpan data.</li>
+                    </ol>
                 </div>
             </div>
 
             <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div class="border-b border-gray-100 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">Panduan Nilai</h2>
-                    <p class="mt-1 text-sm text-gray-500">Rentang poin mengikuti kategori yang dipilih pada form.</p>
+                    <p class="mt-1 text-sm text-gray-500">Gunakan rentang nilai referensi sesuai kebutuhan dan isi jenis sanksi secara manual.</p>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</th>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rentang Poin</th>
+                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Rentang Nilai Referensi</th>
+                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Jenis Sanksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 bg-white">
                             <tr>
-                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sangat Rendah</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0 - 0.15</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.10 - 0.30</td>
+                                <td class="px-5 py-4 text-gray-700">Peringatan lisan oleh guru, walikelas, dan/atau guru BK</td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Rendah</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.16 - 0.3</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.31 - 0.60</td>
+                                <td class="px-5 py-4 text-gray-700">Peringatan dan pemanggilan orangtua oleh walikelas dan guru BK</td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sedang</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.31 - 0.55</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.61 - 0.80</td>
+                                <td class="px-5 py-4 text-gray-700">Surat peringatan tertulis dan skorsing selama 3 hari</td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Tinggi</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.56 - 0.8</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.81 - 0.90</td>
+                                <td class="px-5 py-4 text-gray-700">Skorsing jangka panjang 6 hari dan tugas edukatif</td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-900">Sangat Tinggi</td>
-                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.81 - 1</td>
+                                <td class="whitespace-nowrap px-5 py-4 text-gray-700">0.91 - 1.00+</td>
+                                <td class="px-5 py-4 text-gray-700">Dikembalikan kepada orangtua melalui musyawarah dan prosedur sekolah</td>
                             </tr>
                         </tbody>
                     </table>
@@ -103,11 +93,11 @@
         <x-ui.search-bar
             :action="route('hukumans.index')"
             :value="$search"
-            placeholder="Cari kategori atau rentang poin..."
+            placeholder="Cari kode, nama, atau poin hukuman..."
         />
 
         <x-ui.datatable
-            :columns="['No', 'Kode', 'Nama Hukuman', 'Kategori', 'Rentang Poin', 'Aksi']"
+            :columns="['No', 'Kode', 'Nama Hukuman', 'Rentang Poin', 'Aksi']"
             :items="$jenisHukumans"
             :empty-message="$search ? 'Data tidak ditemukan.' : 'Data kosong.'"
         >
@@ -121,11 +111,6 @@
                     </td>
                     <td class="px-5 py-4 text-gray-700">
                         {{ $jenisHukuman->nama_hukuman }}
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4">
-                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $levelBadgeClasses[$jenisHukuman->kategori] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">
-                            {{ $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori) }}
-                        </span>
                     </td>
                     <td class="whitespace-nowrap px-5 py-4 text-gray-700">
                         {{ $jenisHukuman->rentang_poin_display }}
@@ -196,7 +181,6 @@
             :items="[
                 'Kode Hukuman' => $jenisHukuman->kode_hukuman,
                 'Nama Hukuman' => $jenisHukuman->nama_hukuman,
-                'Kategori' => $categories[$jenisHukuman->kategori] ?? ucfirst($jenisHukuman->kategori),
                 'Rentang Poin' => $jenisHukuman->rentang_poin_display,
                 'Dibuat' => $jenisHukuman->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $jenisHukuman->updated_at?->format('d M Y H:i'),

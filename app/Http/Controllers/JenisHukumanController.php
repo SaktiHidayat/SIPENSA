@@ -23,7 +23,6 @@ class JenisHukumanController extends Controller
         return view('hukumans.index', [
             'jenisHukumans' => $this->jenisHukumanService->paginate(search: $search),
             'search' => $search,
-            'categories' => JenisHukuman::categories(),
         ]);
     }
 
@@ -38,7 +37,7 @@ class JenisHukumanController extends Controller
                 ->with('modal', 'create-jenis-hukuman');
         }
 
-        $this->jenisHukumanService->create($validator->validated());
+        $this->jenisHukumanService->create($this->normalizeValidatedData($validator->validated()));
 
         return to_route('hukumans.index')->with('success', 'Data jenis hukuman berhasil ditambahkan.');
     }
@@ -54,7 +53,7 @@ class JenisHukumanController extends Controller
                 ->with('modal', 'edit-jenis-hukuman-'.$hukuman->id);
         }
 
-        $this->jenisHukumanService->update($hukuman, $validator->validated());
+        $this->jenisHukumanService->update($hukuman, $this->normalizeValidatedData($validator->validated()));
 
         return to_route('hukumans.index')->with('success', 'Data jenis hukuman berhasil diperbarui.');
     }
@@ -76,7 +75,17 @@ class JenisHukumanController extends Controller
                 Rule::unique('jenis_hukumans', 'kode_hukuman')->ignore($hukuman?->id),
             ],
             'nama_hukuman' => ['required', 'string', 'max:255'],
-            'kategori' => ['required', Rule::in(array_keys(JenisHukuman::categories()))],
+            'rentang_poin_awal' => ['required', 'numeric', 'min:0.1'],
+            'rentang_poin_akhir' => [
+                'required',
+                'numeric',
+                'min:0.1',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ((float) $value < (float) request('rentang_poin_awal')) {
+                        $fail('Rentang kedua harus lebih besar atau sama dengan rentang pertama.');
+                    }
+                },
+            ],
         ];
     }
 
@@ -90,8 +99,19 @@ class JenisHukumanController extends Controller
             'nama_hukuman.required' => 'Nama hukuman wajib diisi.',
             'nama_hukuman.string' => 'Nama hukuman harus berupa teks.',
             'nama_hukuman.max' => 'Nama hukuman maksimal 255 karakter.',
-            'kategori.required' => 'Kategori wajib dipilih.',
-            'kategori.in' => 'Kategori yang dipilih tidak valid.',
+            'rentang_poin_awal.required' => 'Rentang pertama wajib diisi.',
+            'rentang_poin_awal.numeric' => 'Rentang pertama harus berupa angka.',
+            'rentang_poin_awal.min' => 'Rentang pertama minimal 0.1.',
+            'rentang_poin_akhir.required' => 'Rentang kedua wajib diisi.',
+            'rentang_poin_akhir.numeric' => 'Rentang kedua harus berupa angka.',
+            'rentang_poin_akhir.min' => 'Rentang kedua minimal 0.1.',
         ];
+    }
+
+    private function normalizeValidatedData(array $data): array
+    {
+        $data['rentang_poin'] = trim((string) $data['rentang_poin_awal']).' - '.trim((string) $data['rentang_poin_akhir']);
+
+        return $data;
     }
 }

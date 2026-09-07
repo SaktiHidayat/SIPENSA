@@ -27,6 +27,7 @@ class="bg-white border-b shadow-sm">
 
     {{-- Right --}}
 
+    <div class="flex items-center gap-2">
 <div
         x-data="{open:false}"
         class="relative">

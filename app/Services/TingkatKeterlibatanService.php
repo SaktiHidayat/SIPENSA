@@ -16,7 +16,7 @@ class TingkatKeterlibatanService
                 $query->where(function ($query) use ($search) {
                     $query->where('kode_tingkat_keterlibatan', 'like', "%{$search}%")
                         ->orWhere('nama_keterangan', 'like', "%{$search}%")
-                        ->orWhere('kategori', 'like', "%{$search}%");
+                        ->orWhere('skala_fuzzy', 'like', "%{$search}%");
                 });
             })
             ->oldest()
@@ -31,7 +31,6 @@ class TingkatKeterlibatanService
         return TingkatKeterlibatan::create([
             'kode_tingkat_keterlibatan' => $data['kode_tingkat_keterlibatan'],
             'nama_keterangan' => $data['nama_keterangan'],
-            'kategori' => $rule['kategori'],
             'skala_fuzzy' => $rule['skala_fuzzy'],
         ]);
     }
@@ -43,7 +42,6 @@ class TingkatKeterlibatanService
         $tingkatKeterlibatan->update([
             'kode_tingkat_keterlibatan' => $data['kode_tingkat_keterlibatan'],
             'nama_keterangan' => $data['nama_keterangan'],
-            'kategori' => $rule['kategori'],
             'skala_fuzzy' => $rule['skala_fuzzy'],
         ]);
 

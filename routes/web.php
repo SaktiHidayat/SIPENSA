@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('alternatifs', AlternatifController::class)->except(['create', 'show', 'edit']);
         Route::get('/spk', [SpkController::class, 'index'])->name('spk.index');
         Route::post('/spk', [SpkController::class, 'store'])->name('spk.store');
+        Route::post('/spk/reset-display', [SpkController::class, 'resetDisplay'])->name('spk.reset-display');
         Route::delete('/spk/{spk}', [SpkController::class, 'destroy'])->name('spk.destroy');
         Route::get('/spk/pdf', [SpkController::class, 'exportPdf'])->name('spk.pdf');
     });

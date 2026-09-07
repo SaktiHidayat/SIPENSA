@@ -149,6 +149,19 @@
     </div>
 
     <div>
+        <label for="{{ $mode }}-bobot-awal-c1-{{ $alternatif?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
+            Bobot Awal C1
+        </label>
+        <input
+            id="{{ $mode }}-bobot-awal-c1-{{ $alternatif?->id ?? 'new' }}"
+            type="text"
+            value="0.75"
+            class="w-full rounded-lg border-gray-300 bg-gray-50 shadow-sm"
+            readonly
+        >
+    </div>
+
+    <div>
         <label for="{{ $mode }}-tingkat-keterlibatan-id-{{ $alternatif?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
             C2 - Tingkat Keterlibatan
         </label>
@@ -182,6 +195,19 @@
             type="text"
             x-model="skalaFuzzyKeterlibatan"
             class="w-full rounded-lg border-gray-300 bg-gray-50 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+            readonly
+        >
+    </div>
+
+    <div>
+        <label for="{{ $mode }}-bobot-awal-c2-{{ $alternatif?->id ?? 'new' }}" class="mb-1 block text-sm font-medium text-gray-700">
+            Bobot Awal C2
+        </label>
+        <input
+            id="{{ $mode }}-bobot-awal-c2-{{ $alternatif?->id ?? 'new' }}"
+            type="text"
+            value="0.25"
+            class="w-full rounded-lg border-gray-300 bg-gray-50 shadow-sm"
             readonly
         >
     </div>

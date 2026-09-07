@@ -12,46 +12,51 @@ class JenisPelanggaran extends Model
         'poin_pelanggaran',
     ];
 
-    protected function casts(): array
+    public function getPoinPelanggaranAttribute(mixed $value): int
     {
-        return [
-            'poin_pelanggaran' => 'integer',
-        ];
+        return (int) (str_contains((string) $value, '-') ? str($value)->afterLast('-') : $value);
+    }
+
+    public function getPoinPelanggaranRangeAttribute(): string
+    {
+        $value = (string) $this->getRawOriginal('poin_pelanggaran');
+
+        return $value !== '' ? $value : (string) $this->poin_pelanggaran;
     }
 
     public static function fuzzyRules(): array
     {
         return [
             [
-                'min' => 0,
-                'max' => 4,
+                'min' => 5,
+                'max' => 15,
                 'kategori' => 'Sangat Rendah',
                 'rumus' => '0/(5-1)=0/4=0',
                 'skala_fuzzy' => 0,
             ],
             [
-                'min' => 5,
-                'max' => 15,
+                'min' => 16,
+                'max' => 30,
                 'kategori' => 'Rendah',
                 'rumus' => '1/(5-1)=1/4=0.25',
                 'skala_fuzzy' => 0.25,
             ],
             [
-                'min' => 16,
-                'max' => 30,
+                'min' => 50,
+                'max' => 75,
                 'kategori' => 'Sedang',
                 'rumus' => '2/(5-1)=2/4=0.5',
                 'skala_fuzzy' => 0.5,
             ],
             [
-                'min' => 31,
-                'max' => 75,
+                'min' => 100,
+                'max' => 100,
                 'kategori' => 'Tinggi',
                 'rumus' => '3/(5-1)=3/4=0.75',
                 'skala_fuzzy' => 0.75,
             ],
             [
-                'min' => 76,
+                'min' => 300,
                 'max' => 300,
                 'kategori' => 'Sangat Tinggi',
                 'rumus' => '4/(5-1)=4/4=1',
@@ -88,9 +93,7 @@ class JenisPelanggaran extends Model
 
     public function getRentangPoinAttribute(): string
     {
-        $rule = static::fuzzyFromPoint($this->poin_pelanggaran);
-
-        return $rule['min'].' - '.$rule['max'];
+        return $this->poin_pelanggaran_range;
     }
 
     public function alternatifs()

@@ -20,4 +20,9 @@ class Siswa extends Model
     {
         return $this->hasMany(Alternatif::class);
     }
+
+    public function spkKejadians()
+    {
+        return $this->hasMany(SpkKejadian::class);
+    }
 }

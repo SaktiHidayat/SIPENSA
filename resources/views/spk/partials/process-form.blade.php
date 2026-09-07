@@ -2,12 +2,13 @@
     $siswas = $siswas ?? collect();
     $jenisPelanggarans = $jenisPelanggarans ?? collect();
     $tingkatKeterlibatans = $tingkatKeterlibatans ?? collect();
+    $pointTotals = $pointTotals ?? collect();
 @endphp
 
 <div
     class="grid gap-4"
     x-data="{
-        siswas: @js($siswas->map(fn ($siswa) => ['id' => $siswa->id, 'nama' => $siswa->nama, 'nisn' => $siswa->nisn])->values()),
+        siswas: @js($siswas->map(fn ($siswa) => ['id' => $siswa->id, 'nama' => $siswa->nama, 'nisn' => $siswa->nisn, 'total_poin' => (int) ($pointTotals[$siswa->id] ?? 0)])->values()),
         pelanggarans: @js($jenisPelanggarans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_pelanggaran.' - '.$item->nama_pelanggaran, 'skala_fuzzy' => $item->skala_fuzzy])->values()),
         keterlibatans: @js($tingkatKeterlibatans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_tingkat_keterlibatan.' - '.$item->nama_keterangan, 'skala_fuzzy' => $item->skala_fuzzy])->values()),
         siswaId: @js(old('siswa_id', request('siswa_id', ''))),
@@ -15,11 +16,13 @@
         tingkatKeterlibatanId: @js(old('tingkat_keterlibatan_id', request('tingkat_keterlibatan_id', ''))),
         skalaFuzzyPelanggaran: '',
         skalaFuzzyKeterlibatan: '',
+        totalPoin: 0,
         displayValue(value) {
             return value === '' || value === null || value === undefined ? '-' : value;
         },
         syncSiswa() {
-            return this.siswas.find(item => String(item.id) === String(this.siswaId));
+            const item = this.siswas.find(item => String(item.id) === String(this.siswaId));
+            this.totalPoin = item ? item.total_poin : 0;
         },
         syncPelanggaran() {
             const item = this.pelanggarans.find(item => String(item.id) === String(this.jenisPelanggaranId));
@@ -35,6 +38,7 @@
             this.tingkatKeterlibatanId = '';
             this.skalaFuzzyPelanggaran = '';
             this.skalaFuzzyKeterlibatan = '';
+            this.totalPoin = 0;
             this.$refs.siswa.value = '';
             this.$refs.siswa.selectedIndex = 0;
             this.$refs.pelanggaran.value = '';
@@ -63,12 +67,17 @@
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             x-model="siswaId"
             x-on:change="syncSiswa()"
+            required
         >
             <option value="">Pilih siswa</option>
             @foreach ($siswas as $siswa)
                 <option value="{{ $siswa->id }}">{{ $siswa->nama }} - {{ $siswa->nisn }}</option>
             @endforeach
         </select>
+        <div class="mt-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+            Total poin tersimpan: <span class="font-semibold" x-text="totalPoin"></span>
+            <span class="text-blue-700">(rekomendasi mulai diproses saat mencapai 10 poin)</span>
+        </div>
     </div>
 
     <div>
@@ -80,6 +89,7 @@
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             x-model="jenisPelanggaranId"
             x-on:change="syncPelanggaran()"
+            required
         >
             <option value="">Pilih jenis pelanggaran</option>
             @foreach ($jenisPelanggarans as $pelanggaran)
@@ -97,6 +107,7 @@
             class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
             x-model="tingkatKeterlibatanId"
             x-on:change="syncKeterlibatan()"
+            required
         >
             <option value="">Pilih tingkat keterlibatan</option>
             @foreach ($tingkatKeterlibatans as $keterlibatan)
