@@ -37,8 +37,8 @@
         @if (auth()->user()?->role === 'admin')
             <x-layouts.sidebar-group
                 title="Master Data"
-                :open="request()->routeIs('users.*', 'siswas.*', 'alternatifs.*')"
-                :active="request()->routeIs('users.*', 'siswas.*', 'alternatifs.*')"
+                :open="request()->routeIs('users.*')"
+                :active="request()->routeIs('users.*')"
             >
                 <x-slot name="icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
@@ -61,34 +61,12 @@
                     Data User
                 </x-layouts.sidebar-link>
 
-                <x-layouts.sidebar-link :href="route('siswas.index')" :active="request()->routeIs('siswas.*')" :indent="true">
-                    <x-slot name="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                            <path d="M12 3l8 4-8 4-8-4 8-4z" />
-                            <path d="M4 11l8 4 8-4" />
-                            <path d="M4 15l8 4 8-4" />
-                        </svg>
-                    </x-slot>
-                    Data Siswa
-                </x-layouts.sidebar-link>
-
-                <x-layouts.sidebar-link :href="route('alternatifs.index')" :active="request()->routeIs('alternatifs.*')" :indent="true">
-                    <x-slot name="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                            <path d="M5 12h14" />
-                            <path d="M12 5v14" />
-                            <path d="M7 7l-2 5 2 5" />
-                            <path d="M17 7l2 5-2 5" />
-                        </svg>
-                    </x-slot>
-                    Data Alternatif
-                </x-layouts.sidebar-link>
             </x-layouts.sidebar-group>
 
             <x-layouts.sidebar-group
                 title="Data Penilaian"
-                :open="request()->routeIs('kriterias.*', 'pelanggarans.*', 'keterlibatans.*', 'hukumans.*')"
-                :active="request()->routeIs('kriterias.*', 'pelanggarans.*', 'keterlibatans.*', 'hukumans.*')"
+                :open="request()->routeIs('pelanggarans.*', 'keterlibatans.*')"
+                :active="request()->routeIs('pelanggarans.*', 'keterlibatans.*')"
             >
                 <x-slot name="icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
@@ -147,58 +125,9 @@
                     </x-slot>
                     Data Jenis Hukuman
                 </x-layouts.sidebar-link>
+
             </x-layouts.sidebar-group>
-
-            <x-layouts.sidebar-link :href="route('spk.index')" :active="request()->routeIs('spk.*')">
-                <x-slot name="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                        <path d="M12 3v18" />
-                        <path d="M5 7h14" />
-                        <path d="M7 7l-2 8h4l-2-8z" />
-                        <path d="M17 7l-2 8h4l-2-8z" />
-                    </svg>
-                </x-slot>
-                Proses SPK
-            </x-layouts.sidebar-link>
-        @elseif (auth()->user()?->role === 'guru_bk')
-            <x-layouts.sidebar-group
-                title="Master Data"
-                :open="request()->routeIs('siswas.*', 'alternatifs.*')"
-                :active="request()->routeIs('siswas.*', 'alternatifs.*')"
-            >
-                <x-slot name="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                        <path d="M4 6h16" />
-                        <path d="M4 12h10" />
-                        <path d="M4 18h13" />
-                        <circle cx="18" cy="12" r="2" />
-                    </svg>
-                </x-slot>
-
-                <x-layouts.sidebar-link :href="route('siswas.index')" :active="request()->routeIs('siswas.*')" :indent="true">
-                    <x-slot name="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                            <path d="M12 3l8 4-8 4-8-4 8-4z" />
-                            <path d="M4 11l8 4 8-4" />
-                            <path d="M4 15l8 4 8-4" />
-                        </svg>
-                    </x-slot>
-                    Data Siswa
-                </x-layouts.sidebar-link>
-
-                <x-layouts.sidebar-link :href="route('alternatifs.index')" :active="request()->routeIs('alternatifs.*')" :indent="true">
-                    <x-slot name="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
-                            <path d="M5 12h14" />
-                            <path d="M12 5v14" />
-                            <path d="M7 7l-2 5 2 5" />
-                            <path d="M17 7l2 5-2 5" />
-                        </svg>
-                    </x-slot>
-                    Data Alternatif
-                </x-layouts.sidebar-link>
-            </x-layouts.sidebar-group>
-
+        @elseif (in_array(auth()->user()?->role, ['guru_bk', 'wali_kelas'], true))
             <x-layouts.sidebar-link :href="route('spk.index')" :active="request()->routeIs('spk.*')">
                 <x-slot name="icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">

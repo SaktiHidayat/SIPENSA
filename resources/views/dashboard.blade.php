@@ -29,25 +29,23 @@
         </div>
 
         <div class="mx-auto grid max-w-6xl gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            @if (auth()->user()?->role === 'admin')
+            @if (in_array(auth()->user()?->role, ['guru_bk', 'wali_kelas'], true))
                 <a href="{{ route('spk.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Total SPK</p>
                     <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['spks'] ?? 0 }}</p>
                 </a>
             @else
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Total SPK</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['spks'] ?? 0 }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Total User</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['users'] ?? 0 }}</p>
                 </div>
             @endif
-            <a href="{{ route('alternatifs.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Alternatif</p>
-                <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['alternatifs'] ?? 0 }}</p>
-            </a>
-            <a href="{{ route('siswas.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Siswa</p>
-                <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['siswas'] ?? 0 }}</p>
-            </a>
+            @if (in_array(auth()->user()?->role, ['guru_bk', 'wali_kelas'], true))
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Siswa Antrean</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['siswas'] ?? 0 }}</p>
+                </div>
+            @endif
             @if (auth()->user()?->role === 'admin')
                 <a href="{{ route('hukumans.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Master Hukuman</p>
@@ -56,6 +54,7 @@
             @endif
         </div>
 
+        @if (in_array(auth()->user()?->role, ['guru_bk', 'wali_kelas'], true))
         <div class="mx-auto grid max-w-6xl gap-6 xl:grid-cols-[1.3fr_0.7fr]">
             <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                 <div class="flex items-center justify-between gap-3">
@@ -121,5 +120,6 @@
                 @endif
             </div>
         </div>
+        @endif
     </div>
 @endsection

@@ -92,8 +92,53 @@
                 </div>
 
                 <x-ui.action-button type="button" x-data x-on:click="$dispatch('open-modal', 'proses-spk')">
-                    Proses
+                    Tambah Siswa
                 </x-ui.action-button>
+            </div>
+        </x-ui.section-card>
+
+        <x-ui.section-card title="Siswa yang Akan Diproses" subtitle="Tambahkan minimal 5 siswa, lalu jalankan proses SPK.">
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        <tr>
+                            <th class="px-4 py-3">No</th>
+                            <th class="px-4 py-3">Nama</th>
+                            <th class="px-4 py-3">Kelas</th>
+                            <th class="px-4 py-3">C1</th>
+                            <th class="px-4 py-3">C2</th>
+                            <th class="px-4 py-3">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 bg-white">
+                        @forelse ($candidates as $candidate)
+                            <tr>
+                                <td class="px-4 py-3 text-gray-500">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-3 font-semibold text-gray-900">{{ $candidate->nama }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $candidate->kelas }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $candidate->jenisPelanggaran?->nama_pelanggaran ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $candidate->tingkatKeterlibatan?->nama_keterangan ?? '-' }}</td>
+                                <td class="whitespace-nowrap px-4 py-3">
+                                    <button type="button" class="mr-2 text-xs font-semibold text-zinc-700 hover:underline" x-data x-on:click="$dispatch('open-modal', 'edit-calon-{{ $candidate->id }}')">Edit</button>
+                                    <form class="inline" action="{{ route('spk.candidates.destroy', $candidate) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-xs font-semibold text-red-700 hover:underline">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">Belum ada siswa yang akan diproses.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
+                <p class="text-sm text-gray-600">{{ $candidates->count() }} siswa tersimpan. Minimal 5 siswa untuk proses.</p>
+                <form action="{{ route('spk.process') }}" method="POST">
+                    @csrf
+                    <x-ui.action-button type="submit" :disabled="$candidates->count() < 5">Proses SPK</x-ui.action-button>
+                </form>
             </div>
         </x-ui.section-card>
 
@@ -186,10 +231,9 @@
     </div>
 
     <x-ui.modal-box name="proses-spk" title="Form Proses SPK">
-        <form action="{{ route('spk.store') }}" method="POST" class="space-y-5">
+        <form action="{{ route('spk.candidates.store') }}" method="POST" class="space-y-5">
             @csrf
             @include('spk.partials.process-form', [
-                'siswas' => $siswas,
                 'jenisPelanggarans' => $jenisPelanggarans,
                 'tingkatKeterlibatans' => $tingkatKeterlibatans,
                 'pointTotals' => $pointTotals,
@@ -199,10 +243,26 @@
                 <button type="button" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50" x-on:click="$dispatch('close-modal', 'proses-spk')">
                     Batal
                 </button>
-                <x-ui.action-button type="submit">Simpan Poin</x-ui.action-button>
+                <x-ui.action-button type="submit">Simpan Siswa</x-ui.action-button>
             </div>
         </form>
     </x-ui.modal-box>
+
+    @foreach ($candidates as $candidate)
+        <x-ui.modal-box name="edit-calon-{{ $candidate->id }}" title="Edit Calon Siswa">
+            <form action="{{ route('spk.candidates.update', $candidate) }}" method="POST" class="space-y-5">
+                @csrf
+                @method('PUT')
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div><label class="mb-1 block text-sm font-medium text-gray-700">Nama Siswa</label><input name="nama" value="{{ $candidate->nama }}" class="w-full rounded-lg border-gray-300 shadow-sm" required></div>
+                    <div><label class="mb-1 block text-sm font-medium text-gray-700">Kelas</label><input name="kelas" value="{{ $candidate->kelas }}" class="w-full rounded-lg border-gray-300 shadow-sm" required></div>
+                </div>
+                <div><label class="mb-1 block text-sm font-medium text-gray-700">Jenis Pelanggaran</label><select name="jenis_pelanggaran_id" class="w-full rounded-lg border-gray-300 shadow-sm" required>@foreach ($jenisPelanggarans as $item)<option value="{{ $item->id }}" @selected($item->id === $candidate->jenis_pelanggaran_id)>{{ $item->kode_pelanggaran }} - {{ $item->nama_pelanggaran }}</option>@endforeach</select></div>
+                <div><label class="mb-1 block text-sm font-medium text-gray-700">Tingkat Keterlibatan</label><select name="tingkat_keterlibatan_id" class="w-full rounded-lg border-gray-300 shadow-sm" required>@foreach ($tingkatKeterlibatans as $item)<option value="{{ $item->id }}" @selected($item->id === $candidate->tingkat_keterlibatan_id)>{{ $item->kode_tingkat_keterlibatan }} - {{ $item->nama_keterangan }}</option>@endforeach</select></div>
+                <div class="flex justify-end"><x-ui.action-button type="submit">Simpan Perubahan</x-ui.action-button></div>
+            </form>
+        </x-ui.modal-box>
+    @endforeach
 
     @foreach ($spks as $spk)
         <x-ui.modal-box name="alternatif-spk-{{ $spk->id }}" title="Data Alternatif yang Dipakai" max-width="5xl">

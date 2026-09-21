@@ -10,6 +10,8 @@ class Spk extends Model
 
     protected $fillable = [
         'kode_spk',
+        'user_id',
+        'batch_id',
         'tanggal_spk',
         'siswa_id',
         'jenis_pelanggaran_id',
@@ -38,6 +40,7 @@ class Spk extends Model
     {
         return [
             'tanggal_spk' => 'date',
+            'batch_id' => 'string',
             'poin_jenis_pelanggaran' => 'integer',
             'poin_sebelumnya' => 'integer',
             'poin_sekarang' => 'integer',
@@ -59,6 +62,11 @@ class Spk extends Model
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function jenisPelanggaran()

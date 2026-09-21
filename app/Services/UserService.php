@@ -30,6 +30,10 @@ class UserService
                         $query->orWhere('role', 'guru_bk');
                     }
 
+                    if (str_contains($normalizedSearch, 'wali')) {
+                        $query->orWhere('role', 'wali_kelas');
+                    }
+
                     if (str_contains($normalizedSearch, 'laki')) {
                         $query->orWhere('jenis_kelamin', 'L');
                     }

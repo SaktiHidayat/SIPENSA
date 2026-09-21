@@ -22,7 +22,7 @@ class AlternatifSeeder extends Seeder
 
         Alternatif::query()->delete();
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $siswa = $siswas->random();
             $jenisPelanggaran = $jenisPelanggarans->random();
             $tingkatKeterlibatan = $tingkatKeterlibatans->random();

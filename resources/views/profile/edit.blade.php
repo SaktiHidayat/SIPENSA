@@ -113,7 +113,7 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Role</label>
-                        <input type="text" value="{{ $user->role === 'admin' ? 'Admin' : 'Guru BK' }}" class="w-full rounded-lg border-gray-200 bg-gray-100 text-gray-500 shadow-sm" readonly>
+                        <input type="text" value="{{ match ($user->role) { 'admin' => 'Admin', 'guru_bk' => 'Guru BK', 'wali_kelas' => 'Wali Kelas', default => $user->role } }}" class="w-full rounded-lg border-gray-200 bg-gray-100 text-gray-500 shadow-sm" readonly>
                     </div>
 
                     <div class="flex justify-between gap-3 border-t border-gray-100 pt-5">

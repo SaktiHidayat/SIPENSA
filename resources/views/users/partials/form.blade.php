@@ -91,8 +91,11 @@
             required
         >
             <option value="">Pilih role</option>
-            <option value="admin" @selected($selectedRole === 'admin')>Admin</option>
+            @if ($isEdit && $user?->role === 'admin')
+                <option value="admin" @selected($selectedRole === 'admin')>Admin</option>
+            @endif
             <option value="guru_bk" @selected($selectedRole === 'guru_bk')>Guru BK</option>
+            <option value="wali_kelas" @selected($selectedRole === 'wali_kelas')>Wali Kelas</option>
         </select>
         @error('role')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

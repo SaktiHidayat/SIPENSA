@@ -50,11 +50,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/photo', [ProfileController::class, 'photo'])->name('profile.photo');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::middleware('role.access:admin,guru_bk')->group(function () {
-        Route::resource('siswas', SiswaController::class)->except(['create', 'show', 'edit']);
-        Route::resource('alternatifs', AlternatifController::class)->except(['create', 'show', 'edit']);
+    Route::middleware('role.access:guru_bk,wali_kelas')->group(function () {
         Route::get('/spk', [SpkController::class, 'index'])->name('spk.index');
-        Route::post('/spk', [SpkController::class, 'store'])->name('spk.store');
+        Route::post('/spk/calon', [SpkController::class, 'storeCandidate'])->name('spk.candidates.store');
+        Route::put('/spk/calon/{candidate}', [SpkController::class, 'updateCandidate'])->name('spk.candidates.update');
+        Route::delete('/spk/calon/{candidate}', [SpkController::class, 'destroyCandidate'])->name('spk.candidates.destroy');
+        Route::post('/spk/process', [SpkController::class, 'process'])->name('spk.process');
         Route::post('/spk/reset-display', [SpkController::class, 'resetDisplay'])->name('spk.reset-display');
         Route::delete('/spk/{spk}', [SpkController::class, 'destroy'])->name('spk.destroy');
         Route::get('/spk/pdf', [SpkController::class, 'exportPdf'])->name('spk.pdf');

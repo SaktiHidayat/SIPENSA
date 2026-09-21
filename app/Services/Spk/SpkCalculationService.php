@@ -7,8 +7,10 @@ use App\Models\JenisHukuman;
 use App\Models\JenisPelanggaran;
 use App\Models\Siswa;
 use App\Models\Spk;
+use App\Models\SpkCalonSiswa;
 use App\Models\SpkKejadian;
 use App\Models\TingkatKeterlibatan;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -32,10 +34,14 @@ class SpkCalculationService
             $jenisPelanggaran = JenisPelanggaran::query()->findOrFail($jenisPelanggaranId);
             $tingkatKeterlibatan = TingkatKeterlibatan::query()->findOrFail($tingkatKeterlibatanId);
             $spk = Spk::query()
-                ->where('siswa_id', $siswa->id)
-                ->orWhereHas('siswa', function ($query) use ($siswa) {
-                    $query->where('nama', $siswa->nama)
-                        ->orWhere('nisn', $siswa->nisn);
+                ->where('user_id', $filters['user_id'] ?? null)
+                ->where('batch_id', $filters['batch_id'] ?? null)
+                ->where(function ($query) use ($siswa) {
+                    $query->where('siswa_id', $siswa->id)
+                        ->orWhereHas('siswa', function ($studentQuery) use ($siswa) {
+                            $studentQuery->where('nama', $siswa->nama)
+                                ->orWhere('nisn', $siswa->nisn);
+                        });
                 })
                 ->latest('id')
                 ->first();
@@ -108,12 +114,14 @@ class SpkCalculationService
 
             $spk ??= new Spk;
             $spk->fill([
+                'user_id' => $filters['user_id'] ?? null,
+                'batch_id' => $filters['batch_id'] ?? null,
                 'tanggal_spk' => now()->toDateString(),
                 'siswa_id' => $siswa->id,
                 'jenis_pelanggaran_id' => $jenisPelanggaran->id,
                 'tingkat_keterlibatan_id' => $tingkatKeterlibatan->id,
                 'poin_jenis_pelanggaran' => $jenisPelanggaran->poin_pelanggaran,
-                'poin_sebelumnya' => 0,
+                'poin_sebelumnya' => (int) ($spk?->total_poin ?? 0),
                 'poin_sekarang' => $poinSekarang,
                 'total_poin' => $totalPoin,
                 'skala_jenis_pelanggaran' => $skalaC1,
@@ -147,10 +155,48 @@ class SpkCalculationService
         });
     }
 
+    public function processPending(Collection $candidates, User $user, string $batchId): void
+    {
+        DB::transaction(function () use ($candidates, $user): void {
+            foreach ($candidates as $candidate) {
+                $siswa = Siswa::create([
+                    'nama' => $candidate->nama,
+                    'nisn' => 'TMP'.str_pad((string) $candidate->id, 7, '0', STR_PAD_LEFT),
+                    'jenis_kelamin' => 'L',
+                    'kelas' => $candidate->kelas,
+                ]);
+
+                $this->process([
+                    'user_id' => $user->id,
+                    'batch_id' => $batchId,
+                    'siswa_id' => $siswa->id,
+                    'jenis_pelanggaran_id' => $candidate->jenis_pelanggaran_id,
+                    'tingkat_keterlibatan_id' => $candidate->tingkat_keterlibatan_id,
+                ]);
+
+                $candidate->update([
+                    'siswa_id' => $siswa->id,
+                    'diproses_pada' => now(),
+                ]);
+            }
+        });
+    }
+
     public function listResults(array $filters = []): Collection
     {
         return Spk::query()
             ->with(['siswa', 'jenisPelanggaran', 'tingkatKeterlibatan', 'jenisHukuman'])
+            ->when(array_key_exists('user_id', $filters), fn ($query) => $query->where('user_id', $filters['user_id']))
+            ->when($filters['active_batch_id'] ?? null, function ($query, $value) use ($filters) {
+                return $query
+                    ->when(
+                        empty($filters['search'])
+                            && empty($filters['tanggal'])
+                            && empty($filters['tanggal_mulai'])
+                            && empty($filters['tanggal_akhir']),
+                        fn ($batchQuery) => $batchQuery->where('batch_id', $value)
+                    );
+            })
             ->when($filters['tanggal'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', $value))
             ->when($filters['tanggal_mulai'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', '>=', $value))
             ->when($filters['tanggal_akhir'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', '<=', $value))
@@ -160,14 +206,6 @@ class SpkCalculationService
                         ->orWhere('nisn', 'like', "%{$value}%");
                 });
             })
-            ->when(
-                ! empty($filters['hidden_ids'])
-                    && empty($filters['search'])
-                    && empty($filters['tanggal'])
-                    && empty($filters['tanggal_mulai'])
-                    && empty($filters['tanggal_akhir']),
-                fn ($query) => $query->whereNotIn('id', $filters['hidden_ids'])
-            )
             ->latest('tanggal_spk')
             ->latest('id')
             ->get();
@@ -177,6 +215,17 @@ class SpkCalculationService
     {
         return Spk::query()
             ->with(['siswa', 'jenisPelanggaran', 'tingkatKeterlibatan', 'jenisHukuman'])
+            ->when(array_key_exists('user_id', $filters), fn ($query) => $query->where('user_id', $filters['user_id']))
+            ->when($filters['active_batch_id'] ?? null, function ($query, $value) use ($filters) {
+                return $query
+                    ->when(
+                        empty($filters['search'])
+                            && empty($filters['tanggal'])
+                            && empty($filters['tanggal_mulai'])
+                            && empty($filters['tanggal_akhir']),
+                        fn ($batchQuery) => $batchQuery->where('batch_id', $value)
+                    );
+            })
             ->when($filters['tanggal'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', $value))
             ->when($filters['tanggal_mulai'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', '>=', $value))
             ->when($filters['tanggal_akhir'] ?? null, fn ($query, $value) => $query->whereDate('tanggal_spk', '<=', $value))
@@ -222,51 +271,7 @@ class SpkCalculationService
             })
             ->values();
 
-        if ($alternatifs->count() < 4) {
-            throw ValidationException::withMessages([
-                'siswa_id' => 'Minimal empat alternatif lain diperlukan agar total alternatif dalam proses menjadi lima.',
-            ]);
-        }
-
-        $usedCombinations = Spk::query()
-            ->get(['alternatif_snapshot'])
-            ->map(function (Spk $spk): string {
-                $snapshot = $spk->alternatif_snapshot;
-                $ids = collect($snapshot ?? [])
-                    ->pluck('alternatif_id')
-                    ->filter()
-                    ->map(fn ($id) => (int) $id)
-                    ->sort()
-                    ->values();
-
-                return $ids->count() === 4 ? $ids->implode(',') : '';
-            })
-            ->filter()
-            ->all();
-
-        foreach ($history ?? collect() as $snapshot) {
-            $ids = collect($snapshot)
-                ->pluck('alternatif_id')
-                ->filter()
-                ->map(fn ($id) => (int) $id)
-                ->sort()
-                ->values();
-
-            if ($ids->count() === 4) {
-                $usedCombinations[] = $ids->implode(',');
-            }
-        }
-
-        for ($attempt = 0; $attempt < 100; $attempt++) {
-            $selection = $alternatifs->shuffle()->take(4)->values();
-            $signature = $selection->pluck('id')->sort()->values()->implode(',');
-
-            if (! in_array($signature, $usedCombinations, true)) {
-                return $selection;
-            }
-        }
-
-        return $alternatifs->shuffle()->take(4)->values();
+        return $alternatifs;
     }
 
     private function benefitNormalize(float $value, float $max): float

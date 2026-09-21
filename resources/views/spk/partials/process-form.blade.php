@@ -1,5 +1,4 @@
 @php
-    $siswas = $siswas ?? collect();
     $jenisPelanggarans = $jenisPelanggarans ?? collect();
     $tingkatKeterlibatans = $tingkatKeterlibatans ?? collect();
     $pointTotals = $pointTotals ?? collect();
@@ -8,21 +7,14 @@
 <div
     class="grid gap-4"
     x-data="{
-        siswas: @js($siswas->map(fn ($siswa) => ['id' => $siswa->id, 'nama' => $siswa->nama, 'nisn' => $siswa->nisn, 'total_poin' => (int) ($pointTotals[$siswa->id] ?? 0)])->values()),
         pelanggarans: @js($jenisPelanggarans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_pelanggaran.' - '.$item->nama_pelanggaran, 'skala_fuzzy' => $item->skala_fuzzy])->values()),
         keterlibatans: @js($tingkatKeterlibatans->map(fn ($item) => ['id' => $item->id, 'label' => $item->kode_tingkat_keterlibatan.' - '.$item->nama_keterangan, 'skala_fuzzy' => $item->skala_fuzzy])->values()),
-        siswaId: @js(old('siswa_id', request('siswa_id', ''))),
         jenisPelanggaranId: @js(old('jenis_pelanggaran_id', request('jenis_pelanggaran_id', ''))),
         tingkatKeterlibatanId: @js(old('tingkat_keterlibatan_id', request('tingkat_keterlibatan_id', ''))),
         skalaFuzzyPelanggaran: '',
         skalaFuzzyKeterlibatan: '',
-        totalPoin: 0,
         displayValue(value) {
             return value === '' || value === null || value === undefined ? '-' : value;
-        },
-        syncSiswa() {
-            const item = this.siswas.find(item => String(item.id) === String(this.siswaId));
-            this.totalPoin = item ? item.total_poin : 0;
         },
         syncPelanggaran() {
             const item = this.pelanggarans.find(item => String(item.id) === String(this.jenisPelanggaranId));
@@ -33,24 +25,18 @@
             this.skalaFuzzyKeterlibatan = item ? item.skala_fuzzy : '';
         },
         resetForm() {
-            this.siswaId = '';
             this.jenisPelanggaranId = '';
             this.tingkatKeterlibatanId = '';
             this.skalaFuzzyPelanggaran = '';
             this.skalaFuzzyKeterlibatan = '';
-            this.totalPoin = 0;
-            this.$refs.siswa.value = '';
-            this.$refs.siswa.selectedIndex = 0;
             this.$refs.pelanggaran.value = '';
             this.$refs.pelanggaran.selectedIndex = 0;
             this.$refs.keterlibatan.value = '';
             this.$refs.keterlibatan.selectedIndex = 0;
         },
         init() {
-            this.siswaId = this.$refs.siswa.value;
             this.jenisPelanggaranId = this.$refs.pelanggaran.value;
             this.tingkatKeterlibatanId = this.$refs.keterlibatan.value;
-            this.syncSiswa();
             this.syncPelanggaran();
             this.syncKeterlibatan();
         }
@@ -58,25 +44,14 @@
     x-init="init()"
     x-on:reset-spk-form.window="resetForm()"
 >
-    <div>
-        <label for="spk-siswa" class="mb-1 block text-sm font-medium text-gray-700">Siswa</label>
-        <select
-            id="spk-siswa"
-            x-ref="siswa"
-            name="siswa_id"
-            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
-            x-model="siswaId"
-            x-on:change="syncSiswa()"
-            required
-        >
-            <option value="">Pilih siswa</option>
-            @foreach ($siswas as $siswa)
-                <option value="{{ $siswa->id }}">{{ $siswa->nama }} - {{ $siswa->nisn }}</option>
-            @endforeach
-        </select>
-        <div class="mt-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">
-            Total poin tersimpan: <span class="font-semibold" x-text="totalPoin"></span>
-            <span class="text-blue-700">(rekomendasi mulai diproses saat mencapai 10 poin)</span>
+    <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+            <label for="spk-nama" class="mb-1 block text-sm font-medium text-gray-700">Nama Siswa</label>
+            <input id="spk-nama" name="nama" type="text" value="{{ old('nama') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
+        </div>
+        <div>
+            <label for="spk-kelas" class="mb-1 block text-sm font-medium text-gray-700">Kelas</label>
+            <input id="spk-kelas" name="kelas" type="text" value="{{ old('kelas') }}" placeholder="Contoh: VII-I" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
         </div>
     </div>
 

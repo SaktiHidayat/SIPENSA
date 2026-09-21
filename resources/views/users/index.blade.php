@@ -46,7 +46,7 @@
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
                         <span class="inline-flex rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
-                            {{ $user->role === 'admin' ? 'Admin' : 'Guru BK' }}
+                            {{ $user->role === 'guru_bk' ? 'Guru BK' : 'Wali Kelas' }}
                         </span>
                     </td>
                     <td class="whitespace-nowrap px-5 py-4">
@@ -117,7 +117,7 @@
                 'Username' => $user->username,
                 'NIP' => $user->nip,
                 'Jenis Kelamin' => $user->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
-                'Role' => $user->role === 'admin' ? 'Admin' : 'Guru BK',
+                'Role' => match ($user->role) { 'admin' => 'Admin', 'guru_bk' => 'Guru BK', 'wali_kelas' => 'Wali Kelas', default => $user->role },
                 'Dibuat' => $user->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $user->updated_at?->format('d M Y H:i'),
             ]"

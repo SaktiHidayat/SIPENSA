@@ -49,52 +49,28 @@
                 <th>No</th>
                 <th>Nama</th>
                 <th>NISN</th>
-                <th>Total Poin</th>
                 <th>C1</th>
                 <th>C2</th>
-                <th>Nilai Akhir</th>
+                <th>Total Nilai Akhir</th>
                 <th>Hukuman</th>
-                <th>C1 Alternatif</th>
-                <th>C2 Alternatif</th>
-                <th>Nilai Akhir Alternatif</th>
-                <th>Hukuman Alternatif</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($results as $spk)
                 @php
-                    $alternatifSnapshots = $spk->alternatif_snapshot ?: [];
-                    if (empty($alternatifSnapshots)) {
-                        $alternatifSnapshots = [[
-                            'skala_c1' => 0,
-                            'skala_c2' => 0,
-                            'nilai_akhir' => 0,
-                            'hukuman' => 'Tidak ada',
-                        ]];
-                    }
-
-                    $alternatifC1 = collect($alternatifSnapshots)->map(fn ($alt) => $formatNumber($alt['skala_c1'] ?? 0, 2))->implode(', ');
-                    $alternatifC2 = collect($alternatifSnapshots)->map(fn ($alt) => $formatNumber($alt['skala_c2'] ?? 0, 2))->implode(', ');
-                    $alternatifNilaiAkhir = collect($alternatifSnapshots)->map(fn ($alt) => $formatNumber($alt['nilai_akhir'] ?? 0, 4))->implode(', ');
-                    $alternatifHukuman = collect($alternatifSnapshots)->map(fn ($alt) => $alt['hukuman'] ?? 'Tidak ada')->implode(', ');
                 @endphp
 
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $spk->siswa?->nama ?? '-' }}</td>
                     <td>{{ $spk->siswa?->nisn ?? '-' }}</td>
-                    <td>{{ $spk->total_poin }}</td>
-                    <td>{{ $formatNumber($spk->skala_jenis_pelanggaran, 2) }}</td>
-                    <td>{{ $formatNumber($spk->skala_tingkat_keterlibatan, 2) }}</td>
-                    <td>{{ $formatNumber($spk->nilai_akhir, 4) }}</td>
+                    <td>{{ $spk->jenisPelanggaran?->nama_pelanggaran ?? '-' }} ({{ $formatNumber($spk->skala_jenis_pelanggaran, 2) }})</td>
+                    <td>{{ $spk->tingkatKeterlibatan?->nama_keterangan ?? '-' }} ({{ $formatNumber($spk->skala_tingkat_keterlibatan, 2) }})</td>
+                    <td>{{ $formatNumber($spk->total_nilai_akhir, 4) }}</td>
                     <td>{{ $spk->nama_hukuman ?? $spk->jenisHukuman?->nama_hukuman ?? '-' }}</td>
-                    <td>{{ $alternatifC1 }}</td>
-                    <td>{{ $alternatifC2 }}</td>
-                    <td>{{ $alternatifNilaiAkhir }}</td>
-                    <td>{{ $alternatifHukuman }}</td>
                 </tr>
             @empty
-                <tr><td colspan="12">Tidak ada data.</td></tr>
+                <tr><td colspan="7">Tidak ada data.</td></tr>
             @endforelse
         </tbody>
     </table>

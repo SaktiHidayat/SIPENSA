@@ -81,7 +81,7 @@ class UserController extends Controller
                 Rule::unique('users', 'nip')->ignore($user?->id),
             ],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
-            'role' => ['required', Rule::in(['admin', 'guru_bk'])],
+            'role' => ['required', Rule::in($user?->role === 'admin' ? ['admin', 'guru_bk', 'wali_kelas'] : ['guru_bk', 'wali_kelas'])],
             'password' => [$user ? 'nullable' : 'required', 'string', 'min:8'],
         ];
     }
@@ -102,7 +102,7 @@ class UserController extends Controller
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
             'jenis_kelamin.in' => 'Jenis kelamin yang dipilih tidak valid.',
             'role.required' => 'Role wajib dipilih.',
-            'role.in' => 'Role yang dipilih tidak valid.',
+            'role.in' => 'Role yang dipilih tidak valid. Admin tidak dapat ditambahkan melalui menu ini.',
             'password.required' => 'Password wajib diisi.',
             'password.string' => 'Password harus berupa teks.',
             'password.min' => $user

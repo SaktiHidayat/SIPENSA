@@ -55,7 +55,7 @@ class="bg-white border-b shadow-sm">
 
                 <div class="text-xs text-gray-500">
 
-                    {{ auth()->user()->role === 'admin' ? 'Admin' : 'Guru BK' }}
+                    {{ match (auth()->user()->role) { 'admin' => 'Admin', 'guru_bk' => 'Guru BK', 'wali_kelas' => 'Wali Kelas', default => auth()->user()->role } }}
 
                 </div>
 
