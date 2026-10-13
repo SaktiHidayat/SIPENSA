@@ -114,11 +114,12 @@
                         @forelse ($candidates as $candidate)
                             <tr>
                                 <td class="px-4 py-3 text-gray-500">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-3 font-semibold text-gray-900">{{ $candidate->nama }}</td>
-                                <td class="px-4 py-3 text-gray-700">{{ $candidate->kelas }}</td>
+                                <td class="px-4 py-3 font-semibold text-gray-900">{{ $candidate->siswa?->nama ?? $candidate->nama }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $candidate->siswa?->kelas ?? $candidate->kelas }}</td>
                                 <td class="px-4 py-3 text-gray-700">{{ $candidate->jenisPelanggaran?->nama_pelanggaran ?? '-' }}</td>
                                 <td class="px-4 py-3 text-gray-700">{{ $candidate->tingkatKeterlibatan?->nama_keterangan ?? '-' }}</td>
                                 <td class="whitespace-nowrap px-4 py-3">
+                                    <button type="button" class="mr-2 text-xs font-semibold text-zinc-700 hover:underline" x-data x-on:click="$dispatch('open-modal', 'detail-calon-{{ $candidate->id }}')">Detail</button>
                                     <button type="button" class="mr-2 text-xs font-semibold text-zinc-700 hover:underline" x-data x-on:click="$dispatch('open-modal', 'edit-calon-{{ $candidate->id }}')">Edit</button>
                                     <form class="inline" action="{{ route('spk.candidates.destroy', $candidate) }}" method="POST">
                                         @csrf
@@ -139,6 +140,44 @@
                     @csrf
                     <x-ui.action-button type="submit" :disabled="$candidates->count() < 5">Proses SPK</x-ui.action-button>
                 </form>
+            </div>
+        </x-ui.section-card>
+
+        <x-ui.section-card title="Panduan Skala Fuzzy FMADM" subtitle="Fuzzifikasi C1 mengubah total poin pelanggaran menjadi skala 0 sampai 1 sebelum normalisasi metode SAW.">
+            <div class="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            <tr>
+                                <th class="px-4 py-3">Rentang Poin C1</th>
+                                <th class="px-4 py-3">Kategori</th>
+                                <th class="px-4 py-3">Rumus</th>
+                                <th class="px-4 py-3">Skala Fuzzy</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            @foreach ($fuzzyRules as $rule)
+                                <tr>
+                                    <td class="whitespace-nowrap px-4 py-3 font-medium text-gray-900">{{ $rule['min'] }} - {{ $rule['max'] }}</td>
+                                    <td class="px-4 py-3 text-gray-700">{{ $rule['kategori'] }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-600">{{ $rule['rumus'] }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 font-semibold text-gray-900">{{ $formatNumber($rule['skala_fuzzy'], 4) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="rounded-xl bg-gray-50 p-5 text-sm text-gray-700">
+                    <p class="font-semibold text-gray-900">Urutan proses FMADM-SAW</p>
+                    <ol class="mt-3 list-decimal space-y-2 pl-5">
+                        <li>C1 memakai total poin pelanggaran dan difuzzifikasi berdasarkan tabel di samping.</li>
+                        <li>C2 memakai skala fuzzy dari tingkat keterlibatan yang dipilih.</li>
+                        <li>Nilai setiap kriteria dinormalisasi dengan membagi skala terhadap nilai maksimum alternatif.</li>
+                        <li>Nilai normalisasi dikalikan bobot C1 0.75 dan C2 0.25.</li>
+                        <li>Kontribusi C1 dan C2 dijumlahkan menjadi nilai akhir.</li>
+                    </ol>
+                </div>
             </div>
         </x-ui.section-card>
 
@@ -230,7 +269,11 @@
         </x-ui.section-card>
     </div>
 
-    <x-ui.modal-box name="proses-spk" title="Form Proses SPK">
+    <x-ui.modal-box
+        name="proses-spk"
+        title="Form Proses SPK"
+        :show="$errors->has('nama') || $errors->has('kelas') || $errors->has('jenis_pelanggaran_id') || $errors->has('tingkat_keterlibatan_id') || session('modal') === 'proses-spk'"
+    >
         <form action="{{ route('spk.candidates.store') }}" method="POST" class="space-y-5">
             @csrf
             @include('spk.partials.process-form', [
@@ -249,13 +292,27 @@
     </x-ui.modal-box>
 
     @foreach ($candidates as $candidate)
+        <x-ui.detail-modal
+            name="detail-calon-{{ $candidate->id }}"
+            title="Detail Siswa"
+            :items="[
+                'Nama' => $candidate->siswa?->nama,
+                'Kelas' => $candidate->siswa?->kelas,
+                'Jenis Kelamin' => $candidate->siswa?->jenis_kelamin === 'L'
+                    ? 'Laki-laki'
+                    : ($candidate->siswa?->jenis_kelamin === 'P' ? 'Perempuan' : '-'),
+                'NISN' => $candidate->siswa?->nisn ?? '-',
+                'Alamat Rumah' => $candidate->siswa?->alamat ?? '-',
+            ]"
+        />
+
         <x-ui.modal-box name="edit-calon-{{ $candidate->id }}" title="Edit Calon Siswa">
             <form action="{{ route('spk.candidates.update', $candidate) }}" method="POST" class="space-y-5">
                 @csrf
                 @method('PUT')
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="mb-1 block text-sm font-medium text-gray-700">Nama Siswa</label><input name="nama" value="{{ $candidate->nama }}" class="w-full rounded-lg border-gray-300 shadow-sm" required></div>
-                    <div><label class="mb-1 block text-sm font-medium text-gray-700">Kelas</label><input name="kelas" value="{{ $candidate->kelas }}" class="w-full rounded-lg border-gray-300 shadow-sm" required></div>
+                <div class="rounded-lg bg-gray-50 p-4 text-sm text-gray-700">
+                    Siswa: <span class="font-semibold">{{ $candidate->siswa?->nama ?? $candidate->nama }}</span>
+                    ({{ $candidate->siswa?->kelas ?? $candidate->kelas }})
                 </div>
                 <div><label class="mb-1 block text-sm font-medium text-gray-700">Jenis Pelanggaran</label><select name="jenis_pelanggaran_id" class="w-full rounded-lg border-gray-300 shadow-sm" required>@foreach ($jenisPelanggarans as $item)<option value="{{ $item->id }}" @selected($item->id === $candidate->jenis_pelanggaran_id)>{{ $item->kode_pelanggaran }} - {{ $item->nama_pelanggaran }}</option>@endforeach</select></div>
                 <div><label class="mb-1 block text-sm font-medium text-gray-700">Tingkat Keterlibatan</label><select name="tingkat_keterlibatan_id" class="w-full rounded-lg border-gray-300 shadow-sm" required>@foreach ($tingkatKeterlibatans as $item)<option value="{{ $item->id }}" @selected($item->id === $candidate->tingkat_keterlibatan_id)>{{ $item->kode_tingkat_keterlibatan }} - {{ $item->nama_keterangan }}</option>@endforeach</select></div>

@@ -154,6 +154,15 @@
 
                 </div>
 
+                <div class="-mt-3 text-center">
+
+                    <a href="{{ route('register') }}"
+                        class="text-sm font-semibold text-gray-700 underline hover:text-black">
+                        Belum punya akun? Daftar
+                    </a>
+
+                </div>
+
                 <!-- Button -->
 
                 <button

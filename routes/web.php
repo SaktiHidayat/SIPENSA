@@ -3,13 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JenisPelanggaranController;
 use App\Http\Controllers\JenisHukumanController;
-use App\Http\Controllers\AlternatifController;
 use App\Http\Controllers\TingkatKeterlibatanController;
 use App\Http\Controllers\KriteriaController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SpkController;
-use App\Models\Alternatif;
 use App\Models\JenisHukuman;
 use App\Models\JenisPelanggaran;
 use App\Models\Kriteria;
@@ -28,7 +26,6 @@ Route::get('/dashboard', function () {
         'dashboardStats' => [
             'users' => User::query()->count(),
             'siswas' => Siswa::query()->count(),
-            'alternatifs' => Alternatif::query()->count(),
             'kriterias' => Kriteria::query()->count(),
             'pelanggarans' => JenisPelanggaran::query()->count(),
             'keterlibatans' => TingkatKeterlibatan::query()->count(),
@@ -61,7 +58,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/spk/pdf', [SpkController::class, 'exportPdf'])->name('spk.pdf');
     });
 
-    Route::middleware('role.access:admin')->group(function () {
+    Route::middleware('role.access:admin,operator')->group(function () {
+        Route::resource('siswas', SiswaController::class)->except(['create', 'show', 'edit']);
+    });
+
+    Route::middleware('role.access:admin,operator')->group(function () {
         Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
         Route::resource('kriterias', KriteriaController::class)->except(['create', 'show', 'edit']);
         Route::resource('pelanggarans', JenisPelanggaranController::class)->except(['create', 'show', 'edit']);

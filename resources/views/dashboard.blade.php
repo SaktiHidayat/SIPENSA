@@ -46,7 +46,7 @@
                     <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['siswas'] ?? 0 }}</p>
                 </div>
             @endif
-            @if (auth()->user()?->role === 'admin')
+            @if (in_array(auth()->user()?->role, ['admin', 'operator'], true))
                 <a href="{{ route('hukumans.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Master Hukuman</p>
                     <p class="mt-2 text-3xl font-bold text-gray-900">{{ $dashboardStats['hukumans'] ?? 0 }}</p>
@@ -95,7 +95,7 @@
             </div>
 
             <div class="space-y-6">
-                @if (auth()->user()?->role === 'admin')
+                @if (in_array(auth()->user()?->role, ['admin', 'operator'], true))
                     <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-900">Master Data</h3>
                         <div class="mt-4 grid grid-cols-2 gap-3 text-sm">

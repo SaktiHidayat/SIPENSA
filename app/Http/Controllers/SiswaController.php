@@ -76,6 +76,7 @@ class SiswaController extends Controller
             ],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
             'kelas' => ['required', 'string', 'max:50', 'regex:/^(VII|VIII|IX)(-[IVXLCDM0-9A-Z]+)?$/'],
+            'alamat' => ['required', 'string', 'max:2000'],
         ];
     }
 

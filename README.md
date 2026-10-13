@@ -7,7 +7,7 @@ SIPENSA adalah aplikasi berbasis Laravel untuk mengelola data siswa, pelanggaran
 - Autentikasi dan pembatasan akses untuk `admin` dan `guru_bk`
 - Dashboard ringkasan data
 - Pengelolaan pengguna dan siswa
-- Pengelolaan alternatif, kriteria, jenis pelanggaran, tingkat keterlibatan, dan jenis hukuman
+- Pengelolaan kriteria, jenis pelanggaran, tingkat keterlibatan, dan jenis hukuman
 - Perhitungan serta riwayat hasil SPK
 - Pencarian hasil SPK berdasarkan nama, NISN, dan tanggal
 - Detail perhitungan dan ekspor PDF
@@ -154,7 +154,7 @@ php artisan migrate:fresh --seed
 Seeder utama menjalankan:
 
 - `AdminSeeder`
-- `AlternatifSeeder`
+
 
 Akun admin awal dari seeder:
 
@@ -187,7 +187,7 @@ Buka aplikasi melalui:
 http://127.0.0.1:8000
 ```
 
-Sebagai alternatif, semua proses pengembangan dapat dijalankan melalui skrip Composer:
+Sebagai admin, semua proses pengembangan dapat dijalankan melalui skrip Composer:
 
 ```bash
 composer run dev

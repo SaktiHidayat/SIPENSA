@@ -29,6 +29,8 @@
             this.tingkatKeterlibatanId = '';
             this.skalaFuzzyPelanggaran = '';
             this.skalaFuzzyKeterlibatan = '';
+            this.$refs.nama.value = '';
+            this.$refs.kelas.value = '';
             this.$refs.pelanggaran.value = '';
             this.$refs.pelanggaran.selectedIndex = 0;
             this.$refs.keterlibatan.value = '';
@@ -47,11 +49,35 @@
     <div class="grid gap-4 sm:grid-cols-2">
         <div>
             <label for="spk-nama" class="mb-1 block text-sm font-medium text-gray-700">Nama Siswa</label>
-            <input id="spk-nama" name="nama" type="text" value="{{ old('nama') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
+            <input
+                x-ref="nama"
+                id="spk-nama"
+                name="nama"
+                type="text"
+                value="{{ old('nama') }}"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+                required
+            >
+            @error('nama')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
         <div>
             <label for="spk-kelas" class="mb-1 block text-sm font-medium text-gray-700">Kelas</label>
-            <input id="spk-kelas" name="kelas" type="text" value="{{ old('kelas') }}" placeholder="Contoh: VII-I" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700" required>
+            <input
+                x-ref="kelas"
+                id="spk-kelas"
+                name="kelas"
+                type="text"
+                value="{{ old('kelas') }}"
+                placeholder="Contoh: VII-I"
+                pattern="(VII|VIII|IX)(-[IVXLCDM0-9A-Z]+)?"
+                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-zinc-700 focus:ring-zinc-700"
+                required
+            >
+            @error('kelas')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
     </div>
 
@@ -71,6 +97,9 @@
                 <option value="{{ $pelanggaran->id }}">{{ $pelanggaran->kode_pelanggaran }} - {{ $pelanggaran->nama_pelanggaran }}</option>
             @endforeach
         </select>
+        @error('jenis_pelanggaran_id')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
     </div>
 
     <div>
@@ -89,6 +118,9 @@
                 <option value="{{ $keterlibatan->id }}">{{ $keterlibatan->kode_tingkat_keterlibatan }} - {{ $keterlibatan->nama_keterangan }}</option>
             @endforeach
         </select>
+        @error('tingkat_keterlibatan_id')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
     </div>
 
     <div class="grid gap-3 sm:grid-cols-2">

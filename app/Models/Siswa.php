@@ -14,15 +14,16 @@ class Siswa extends Model
         'nisn',
         'jenis_kelamin',
         'kelas',
+        'alamat',
     ];
-
-    public function alternatifs()
-    {
-        return $this->hasMany(Alternatif::class);
-    }
 
     public function spkKejadians()
     {
         return $this->hasMany(SpkKejadian::class);
+    }
+
+    public function spkCalonSiswas()
+    {
+        return $this->hasMany(SpkCalonSiswa::class);
     }
 }

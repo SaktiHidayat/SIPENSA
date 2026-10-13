@@ -100,9 +100,5 @@ class TingkatKeterlibatan extends Model
     {
         return static::ruleForLabel($this->nama_keterangan)['rumus'];
     }
-
-    public function alternatifs()
-    {
-        return $this->hasMany(Alternatif::class);
-    }
+    
 }

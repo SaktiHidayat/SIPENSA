@@ -22,7 +22,7 @@ class UserService
                         ->orWhere('role', 'like', "%{$search}%")
                         ->orWhere('jenis_kelamin', 'like', "%{$search}%");
 
-                    if (str_contains($normalizedSearch, 'admin')) {
+                    if (str_contains($normalizedSearch, 'admin') || str_contains($normalizedSearch, 'operator')) {
                         $query->orWhere('role', 'admin');
                     }
 

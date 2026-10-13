@@ -34,11 +34,11 @@
             Dashboard
         </x-layouts.sidebar-link>
 
-        @if (auth()->user()?->role === 'admin')
+        @if (in_array(auth()->user()?->role, ['admin', 'operator'], true))
             <x-layouts.sidebar-group
                 title="Master Data"
-                :open="request()->routeIs('users.*')"
-                :active="request()->routeIs('users.*')"
+                :open="request()->routeIs('users.*', 'siswas.*')"
+                :active="request()->routeIs('users.*', 'siswas.*')"
             >
                 <x-slot name="icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
@@ -59,6 +59,18 @@
                         </svg>
                     </x-slot>
                     Data User
+                </x-layouts.sidebar-link>
+
+                <x-layouts.sidebar-link :href="route('siswas.index')" :active="request()->routeIs('siswas.*')" :indent="true">
+                    <x-slot name="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="{{ $iconClass }}">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M20 8v6" />
+                            <path d="M23 11h-6" />
+                        </svg>
+                    </x-slot>
+                    Data Siswa
                 </x-layouts.sidebar-link>
 
             </x-layouts.sidebar-group>

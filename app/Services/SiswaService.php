@@ -41,6 +41,7 @@ class SiswaService
             'nisn' => $data['nisn'],
             'jenis_kelamin' => $data['jenis_kelamin'],
             'kelas' => $data['kelas'],
+            'alamat' => $data['alamat'],
         ]);
     }
 
@@ -51,6 +52,7 @@ class SiswaService
             'nisn' => $data['nisn'],
             'jenis_kelamin' => $data['jenis_kelamin'],
             'kelas' => $data['kelas'],
+            'alamat' => $data['alamat'],
         ]);
 
         return $siswa;

@@ -9,6 +9,7 @@ use App\Models\SpkCalonSiswa;
 use App\Models\SpkKejadian;
 use App\Models\TingkatKeterlibatan;
 use App\Services\Spk\SpkCalculationService;
+use App\Services\FmadmSawService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,10 @@ use Illuminate\View\View;
 
 class SpkController extends Controller
 {
-    public function __construct(private readonly SpkCalculationService $spkService) {}
+    public function __construct(
+        private readonly SpkCalculationService $spkService,
+        private readonly FmadmSawService $fmadmSawService,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -49,7 +53,7 @@ class SpkController extends Controller
 
         return view('spk.index', [
             'candidates' => SpkCalonSiswa::query()
-                ->with(['jenisPelanggaran', 'tingkatKeterlibatan'])
+                ->with(['siswa', 'jenisPelanggaran', 'tingkatKeterlibatan'])
                 ->where('user_id', $request->user()->id)
                 ->whereNull('diproses_pada')
                 ->oldest()
@@ -64,6 +68,7 @@ class SpkController extends Controller
             'searchTanggalMulai' => $tanggalMulai,
             'searchTanggalAkhir' => $tanggalAkhir,
             'searchStudent' => $search,
+            'fuzzyRules' => $this->fmadmSawService->fuzzyRules(),
         ]);
     }
 
@@ -83,7 +88,50 @@ class SpkController extends Controller
             'tingkat_keterlibatan_id' => ['required', 'exists:tingkat_keterlibatans,id'],
         ]);
 
-        SpkCalonSiswa::create($data + ['user_id' => $request->user()->id]);
+        $nama = trim($data['nama']);
+        $kelas = trim($data['kelas']);
+        $matches = Siswa::query()
+            ->whereRaw('LOWER(TRIM(nama)) = ?', [mb_strtolower($nama)])
+            ->whereRaw('LOWER(TRIM(kelas)) = ?', [mb_strtolower($kelas)])
+            ->limit(2)
+            ->get();
+
+        if ($matches->isEmpty()) {
+            return back()
+                ->withErrors(['nama' => 'Data siswa tidak ditemukan. Pastikan nama dan kelas sama dengan data master yang dimasukkan Operator.'])
+                ->withInput()
+                ->with('modal', 'proses-spk');
+        }
+
+        if ($matches->count() > 1) {
+            return back()
+                ->withErrors(['nama' => 'Ditemukan lebih dari satu siswa dengan nama dan kelas tersebut. Minta Operator memperbaiki data master agar siswa dapat dibedakan.'])
+                ->withInput()
+                ->with('modal', 'proses-spk');
+        }
+
+        $siswa = $matches->first();
+        $alreadyQueued = SpkCalonSiswa::query()
+            ->where('user_id', $request->user()->id)
+            ->where('siswa_id', $siswa->id)
+            ->whereNull('diproses_pada')
+            ->exists();
+
+        if ($alreadyQueued) {
+            return back()
+                ->withErrors(['nama' => 'Siswa ini sudah ada di antrean proses.'])
+                ->withInput()
+                ->with('modal', 'proses-spk');
+        }
+
+        SpkCalonSiswa::create([
+            'user_id' => $request->user()->id,
+            'siswa_id' => $siswa->id,
+            'nama' => $nama,
+            'kelas' => $kelas,
+            'jenis_pelanggaran_id' => $data['jenis_pelanggaran_id'],
+            'tingkat_keterlibatan_id' => $data['tingkat_keterlibatan_id'],
+        ]);
 
         return to_route('spk.index')->with('success', 'Siswa berhasil disimpan ke daftar calon proses SPK.');
     }
@@ -92,8 +140,6 @@ class SpkController extends Controller
     {
         abort_unless($candidate->user_id === $request->user()->id && $candidate->diproses_pada === null, 404);
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:50', 'regex:/^(VII|VIII|IX)(-[IVXLCDM0-9A-Z]+)?$/'],
             'jenis_pelanggaran_id' => ['required', 'exists:jenis_pelanggarans,id'],
             'tingkat_keterlibatan_id' => ['required', 'exists:tingkat_keterlibatans,id'],
         ]);
@@ -113,10 +159,18 @@ class SpkController extends Controller
     public function process(Request $request): RedirectResponse
     {
         $candidates = SpkCalonSiswa::query()
+            ->with(['siswa', 'jenisPelanggaran', 'tingkatKeterlibatan'])
             ->where('user_id', $request->user()->id)
             ->whereNull('diproses_pada')
             ->oldest()
             ->get();
+
+        if ($candidates->contains(fn (SpkCalonSiswa $candidate) => $candidate->siswa === null)) {
+            return to_route('spk.index')->with(
+                'error',
+                'Ada antrean yang belum terhubung ke data siswa master. Hapus antrean lama tersebut, lalu tambahkan kembali dengan mengetik nama dan kelas yang cocok dengan data master.',
+            );
+        }
 
         if ($candidates->count() < 5) {
             return to_route('spk.index')->with('error', 'Minimal 5 siswa diperlukan untuk menjalankan proses SPK.');

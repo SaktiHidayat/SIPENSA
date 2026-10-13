@@ -31,35 +31,49 @@ class JenisPelanggaran extends Model
                 'min' => 5,
                 'max' => 15,
                 'kategori' => 'Sangat Rendah',
-                'rumus' => '0/(5-1)=0/4=0',
+                'rumus' => '0/6 = 0',
                 'skala_fuzzy' => 0,
             ],
             [
                 'min' => 16,
                 'max' => 30,
                 'kategori' => 'Rendah',
-                'rumus' => '1/(5-1)=1/4=0.25',
-                'skala_fuzzy' => 0.25,
+                'rumus' => '1/6 = 0.1667',
+                'skala_fuzzy' => 1 / 6,
             ],
             [
-                'min' => 50,
-                'max' => 75,
+                'min' => 31,
+                'max' => 50,
                 'kategori' => 'Sedang',
-                'rumus' => '2/(5-1)=2/4=0.5',
-                'skala_fuzzy' => 0.5,
+                'rumus' => '2/6 = 0.3333',
+                'skala_fuzzy' => 2 / 6,
             ],
             [
-                'min' => 100,
+                'min' => 51,
+                'max' => 75,
+                'kategori' => 'Sedang Tinggi',
+                'rumus' => '3/6 = 0.5',
+                'skala_fuzzy' => 3 / 6,
+            ],
+            [
+                'min' => 76,
                 'max' => 100,
                 'kategori' => 'Tinggi',
-                'rumus' => '3/(5-1)=3/4=0.75',
-                'skala_fuzzy' => 0.75,
+                'rumus' => '4/6 = 0.6667',
+                'skala_fuzzy' => 4 / 6,
             ],
             [
-                'min' => 300,
-                'max' => 300,
+                'min' => 101,
+                'max' => 200,
                 'kategori' => 'Sangat Tinggi',
-                'rumus' => '4/(5-1)=4/4=1',
+                'rumus' => '5/6 = 0.8333',
+                'skala_fuzzy' => 5 / 6,
+            ],
+            [
+                'min' => 201,
+                'max' => 300,
+                'kategori' => 'Ekstrem',
+                'rumus' => '6/6 = 1',
                 'skala_fuzzy' => 1,
             ],
         ];
@@ -95,9 +109,5 @@ class JenisPelanggaran extends Model
     {
         return $this->poin_pelanggaran_range;
     }
-
-    public function alternatifs()
-    {
-        return $this->hasMany(Alternatif::class);
-    }
+    
 }

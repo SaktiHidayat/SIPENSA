@@ -91,8 +91,8 @@
             required
         >
             <option value="">Pilih role</option>
-            @if ($isEdit && $user?->role === 'admin')
-                <option value="admin" @selected($selectedRole === 'admin')>Admin</option>
+            @if ($isEdit && in_array($user?->role, ['admin', 'operator'], true))
+                <option value="{{ $user->role }}" @selected($selectedRole === $user->role)>Operator</option>
             @endif
             <option value="guru_bk" @selected($selectedRole === 'guru_bk')>Guru BK</option>
             <option value="wali_kelas" @selected($selectedRole === 'wali_kelas')>Wali Kelas</option>

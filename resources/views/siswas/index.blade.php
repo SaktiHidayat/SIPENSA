@@ -115,6 +115,7 @@
                 'NISN' => $siswa->nisn,
                 'Jenis Kelamin' => $siswa->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
                 'Kelas' => $siswa->kelas,
+                'Alamat Rumah' => $siswa->alamat,
                 'Dibuat' => $siswa->created_at?->format('d M Y H:i'),
                 'Diperbarui' => $siswa->updated_at?->format('d M Y H:i'),
             ]"

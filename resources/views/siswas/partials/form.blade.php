@@ -79,4 +79,22 @@
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
     </div>
+    <div>
+     <label for="{{ $mode }}-alamat-{{ $siswa?->id ?? 'new' }}"
+        class="mb-1 block text-sm font-medium text-gray-700">
+        Alamat Rumah
+    </label>
+    <textarea
+        id="{{ $mode }}-alamat-{{ $siswa?->id ?? 'new' }}"
+        name="alamat"
+        rows="3"
+        maxlength="2000"
+        class="w-full rounded-lg border-gray-300 shadow-sm"
+        required
+    >{{ old('alamat', $siswa?->alamat) }}</textarea>
+
+    @error('alamat')
+        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+    </div>
 </div>
